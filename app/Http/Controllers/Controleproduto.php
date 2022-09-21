@@ -5,15 +5,25 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Produto;
 
+
 class Controleproduto extends Controller
 {
     public function index() {
-        $produto = Produto::all();
 
-        
+        $search = request('search');
+
+        if($search){
+            $produto = Produto::where([
+                ['nome', 'like', '%'.$search.'%']
+            ])->get();
+
+        }else{
+            $produto = Produto::all();
+        }
 
         return view ('produto.index', [
-            'produto' => $produto
+            'produto' => $produto,
+            'search' => $search
         ]);
     }
 

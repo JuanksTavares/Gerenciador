@@ -29,7 +29,7 @@
                 <div class="p-6 bg-white border-b border-gray-200">
                     @if ($search)
                     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                        Filtrado por : <a href="/buscar" class="btn btn-outline-dark"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/></svg>{{$search}}</a>
+                        Buscando por : {{$search}}
                     </h2>
                     @endif
                     <table class="table" >
@@ -79,7 +79,7 @@
                             @endforeach
                         </tr>
                     </table>
-                    <!--  <a href="/buscar" class="btn btn-dark mb-2">Voltar</a>  -->
+                    <a href="/buscar" class="btn btn-dark mb-2">Voltar</a>
                 </div>
             </div>
         </div>
