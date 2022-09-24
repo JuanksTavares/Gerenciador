@@ -27,7 +27,7 @@ Route::group(['middleware' => 'auth'], function(){
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
-    Route::get('/carrinho', [Controlecaixa::class,'index'])->name(caixa.index)
+    Route::get('/carrinho', [Controlecaixa::class,'index'])->name('caixa.index');
 });
 
 require __DIR__.'/auth.php';
