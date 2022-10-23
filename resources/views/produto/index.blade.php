@@ -15,7 +15,7 @@
                         <div class="container-fluid">
                             <a href="/buscar/adicionar" class="btn btn-dark mb-2">adicionar</a>
                             <form class="d-flex" role="search" action = "/buscar" method = "GET">
-                                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name = "search">
+                                <input class="form-control me-2" type="search" placeholder="Buscar por nome" aria-label="Search" name = "search">
                             </form>
                         </div>
                     </nav>

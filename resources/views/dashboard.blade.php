@@ -10,10 +10,81 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                <div class="form-group">
-                          <label for="nome">Nome Produto</label>
-                          <input type="text" class="form-control" name="nome" id="nome"required>
-                      </div>
+                    <div class="form-group">
+                        <label for="nome">Buscar Produto</label>
+                        <input type="text" class="form-control" name="nome" placeholder="Buscar produto por: nome ou codigo de barra" id="nome"required>
+                        
+                    </div>
+                    <meta name="csrf-token" content="{{ csrf_token() }}">
+                    <div class="md-col-12">
+                        <form id="vendaForm" method="post">
+                            {{csrf_field()}}
+                            <div id="topaste"></div>
+                            <div class="row">
+                                
+                                <div class="col-md-2 col-md-offset-6">
+                                    <label>Total de itens:</label>
+                                    <input id="item_total" class="form-control"/>
+                                </div>
+                                <div class="col-md-2 ">
+                                    <label>Total:</label>
+                                    <input id="total"  data-mask="000.000,00" data-mask-reverse="true" class="form-control"/>
+                                </div>
+                                <div class="col-md-2 col-md-offset-2">
+                                    <label>Desconto:</label>
+                                    <input id="desconto" oninput="$(this).trigger('change');" data-mask="000%" data-mask-reverse="true" name="desconto" class="form-control"/>
+                                </div>
+                                <div class="col-md-2 ">
+                                    <label>Pagamento:</label>
+                                    <select id="pagamento" name="pagamento" class="form-control">
+                                        <option value="DI">Dinheiro</option>
+                                        <option value="CR">Crédito</option>
+                                        <option value="DE">Débito</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Parcelas:</label>
+                                <select id="parcelas" name="parcelas" class="form-control"readonly="readonly">
+                                        <option value="1">1x</option>
+                                        <option value="2">2x</option>
+                                        <option value="3">3x</option>
+                                        <option value="4">4x</option>
+                                        <option value="5">5x</option>
+                                        <option value="6">6x</option>
+                                        <option value="7">7x</option>
+                                        <option value="8">8x</option>
+                                        <option value="9">9x</option>
+                                        <option value="10">10x</option>
+                                        <option value="11">11x</option>
+                                        <option value="12">12x</option>
+                                        
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Valor da parcela:</label>
+                                    <input id="valor_parcelas" name="valor_parcelas"  data-mask="000.000,00" data-mask-reverse="true" class="form-control"/>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Total a pagar:</label>
+                                    <input id="total_pagar" data-mask="000.000,00" data-mask-reverse="true" name="total" class="form-control"/>
+                                </div> 
+                                
+                                <div class="col-md-2 ">
+                                    <label>Dinheiro:</label>
+                                    <input id="dinheiro" name="dinheiro" data-mask="000.000,00"  oninput="$(this).trigger('change');" data-mask-reverse="true"class="form-control" readonly/>
+                                </div>
+                                <div class="col-md-2 col-md-offset-2">
+                                    <label>Valor recebido:</label>
+                                    <input id="val_recebido" data-mask="000.000,00" data-mask-reverse="true" name="valor_dinheiro" class="form-control"/>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Troco:</label>
+                                    <input id="troco" data-mask="000.000,00" data-mask-reverse="true" name="troco" class="form-control" readonly/>
+                                </div>
+                            </div>
+                            <button class="btn btn-success" type="submit">Enviar</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -23,9 +94,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <div>
-                            
-                    </div>
+                    
                     <div>
                         <div>
                         <table class="table" >
@@ -43,7 +112,7 @@
                                     <td>
                                         <input type="int" class="form-control" name="quantidade" id="quantidade"required>
                                     </td>
-                                    <td>produtovalor_venda</td>
+                                    <td>produto valor_venda</td>
                                     <td>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                             
