@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('Venda', function (Blueprint $table) {
+        Schema::create('produto_vendido', function (Blueprint $table) {
             $table->id('id_venda');
-            $table->float('valor_total');
-            $table->String('forma_pagamento');
-            $table->float('parcelas');
-            $table->float('valor_parcelas');
+            $table->string('produto');
+            $table->float('quantidade');
             $table->timestamps('data_venda');
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::drop('Venda');
+        Schema::drop('produto_vendido');
     }
 };

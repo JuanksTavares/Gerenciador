@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Caixa;
+use App\Models\Venda;
 use Illuminate\Http\Request;
-use app\Models\Caixa;
+
 
 class Controlecaixa extends Controller
 {
@@ -25,7 +27,7 @@ class Controlecaixa extends Controller
     public function busca(){
         
 
-        $search = request('search');
+        $search = request('busca');
 
         if($search){
             $produto = Produto::where([
@@ -34,19 +36,32 @@ class Controlecaixa extends Controller
 
         }else{
             $produto = Produto::all();
+            return view('produto.adicionar');
         }
+    }
+
+    public function adicionar(){
+
     }
 
     public function store(Request $request) {
 
-        $vendas = Venda::create([
-            'id_venda' => $request -> $id_venda,
-            'lista_produtos' => $request -> $lista_produtos,
+        $vendas = Caixa::create([
             'valor_total' => $request -> $valor_total,
             'forma_pagamento' => $request-> $forma_pagamento,
-            
+            'parcelas' => $request-> $parcelas,
+            'valor_parcelas' => $request-> $parcelas_valor,
+            'data_venda' => $request -> $data_venda
 
             
+
+        ]);
+
+        $produto_vendido = Venda::create([
+
+            'produto' => $request -> $produto,
+            'quantidade' => $request -> $quantidade, 
+            'data_venda' => $request -> $data_venda
 
         ]);
 

@@ -12,7 +12,7 @@
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="form-group">
                         <label for="nome">Buscar Produto</label>
-                        <input type="text" class="form-control" name="nome" placeholder="Buscar produto por: nome ou codigo de barra" id="nome"required>
+                        <input type="text" class="form-control" name="nome" placeholder="Buscar produto por: nome ou codigo de barra" id="busca"required>
                         
                     </div>
                     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -28,15 +28,11 @@
                                 </div>
                                 <div class="col-md-2 ">
                                     <label>Total:</label>
-                                    <input id="total"  data-mask="000.000,00" data-mask-reverse="true" class="form-control"/>
-                                </div>
-                                <div class="col-md-2 col-md-offset-2">
-                                    <label>Desconto:</label>
-                                    <input id="desconto" oninput="$(this).trigger('change');" data-mask="000%" data-mask-reverse="true" name="desconto" class="form-control"/>
+                                    <input id="valor_total"  data-mask="000.000,00" data-mask-reverse="true" class="form-control"/>
                                 </div>
                                 <div class="col-md-2 ">
                                     <label>Pagamento:</label>
-                                    <select id="pagamento" name="pagamento" class="form-control">
+                                    <select id="forma_pagamento" name="pagamento" class="form-control">
                                         <option value="DI">Dinheiro</option>
                                         <option value="CR">Crédito</option>
                                         <option value="DE">Débito</option>
@@ -69,10 +65,6 @@
                                     <input id="total_pagar" data-mask="000.000,00" data-mask-reverse="true" name="total" class="form-control"/>
                                 </div> 
                                 
-                                <div class="col-md-2 ">
-                                    <label>Dinheiro:</label>
-                                    <input id="dinheiro" name="dinheiro" data-mask="000.000,00"  oninput="$(this).trigger('change');" data-mask-reverse="true"class="form-control" readonly/>
-                                </div>
                                 <div class="col-md-2 col-md-offset-2">
                                     <label>Valor recebido:</label>
                                     <input id="val_recebido" data-mask="000.000,00" data-mask-reverse="true" name="valor_dinheiro" class="form-control"/>
@@ -106,16 +98,16 @@
                                 <td>Excluir</td>
                             </tr>
                             <tr>
+                                @foreach ($produto as $produto)    
                                 <tr>
-                                    <td>produto id</td>
-                                    <td>produto nome</td>
+                                    <td>{{$produto['id']}}</td>
+                                    <td>{{ $produto->nome}}</td>
                                     <td>
                                         <input type="int" class="form-control" name="quantidade" id="quantidade"required>
                                     </td>
-                                    <td>produto valor_venda</td>
+                                    <td>{{ $produto->valor_venda}}</td>
                                     <td>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                            
                                                 @csrf
                                                 @method('DELETE')
                                             <button class="btn btn-outline-danger" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/></svg></button>
@@ -123,6 +115,7 @@
                                         </div>
                                     </td>
                                 </tr>
+                                @endforeach
                             </tr>
                         </table>
                         </div>

@@ -5,18 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Caixa extends Model
+class Venda extends Model
 {
-    protected $table = 'vendas';
+    protected $table = 'produto_vendido';
 
     protected $guarded = [];
 
     protected $fillable = [
         'id_venda',
-        'valor_total',
-        'forma_pagamento',
-        'parcelas',
-        'parcelas_valor',
+        'produto',
+        'quantidade',
         'data_venda'
     ];
 }
