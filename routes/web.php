@@ -31,12 +31,13 @@ Route::group(['middleware' => 'auth'], function(){
     
     
     
-        Route::get('/dashboard', function () {
-            return view('dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [Controlecaixa::class,'index'])->name('dashboard');
+        // Route::get('/dashboard', function () {
+        //     return view('dashboard');
+        // })->name('dashboard');
         Route::get('/carrinho', [Controlecaixa::class,'index'])->name('caixa.index');
-        Route::get('/dashboard', [Controlecaixa::class,'store'])->name('store');
 
+         Route::post('/dashboard', [Controlecaixa::class,'store'])->name('caixa.store');
 });
 
 require __DIR__.'/auth.php';

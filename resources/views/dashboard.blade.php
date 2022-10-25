@@ -97,15 +97,15 @@
                                 <td>SubTotal</td>
                                 <td>Excluir</td>
                             </tr>
-                            <tr>
-                                @foreach ($produto as $produto)    
+                            <tr>  
+                            @foreach ($pedidos as $pedido)
                                 <tr>
-                                    <td>{{$produto['id']}}</td>
-                                    <td>{{ $produto->nome}}</td>
+                                    <td>produto id</td>
+                                    <td>produto nome</td>
                                     <td>
                                         <input type="int" class="form-control" name="quantidade" id="quantidade"required>
                                     </td>
-                                    <td>{{ $produto->valor_venda}}</td>
+                                    <td>produto valor_venda</td>
                                     <td>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                                 @csrf

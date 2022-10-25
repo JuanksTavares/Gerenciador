@@ -9,19 +9,19 @@ use Illuminate\Http\Request;
 
 class Controlecaixa extends Controller
 {
-    function __construct(){
-        $this->middleware('auth');
-    }
+    // function __construct(){
+    //     $this->middleware('auth');
+    // }
 
     public function index(){
         
-        $pedidos = Caixa::where([
-            'status' =>'RE',
-            'user_id' => Auth::id()
-        ])->get();
-
-        return view (caixa.index, compact('pedidos'));
-
+        // $pedidos = Caixa::where([
+        //     'status' =>'RE',
+        //     'user_id' => Auth::id()
+        // ])->get();
+        $pedidos= Caixa::all();
+        
+        return view('dashboard',['pedidos'=>$pedidos]);
     }
 
     public function busca(){
@@ -31,7 +31,7 @@ class Controlecaixa extends Controller
 
         if($search){
             $produto = Produto::where([
-                ['nome', 'like', '%'.$search.'%'] and ['Cod_barra', 'like', '%'.$search.'%']
+                ['nome', 'like', '%'.$search.'%'] && ['Cod_barra', 'like', '%'.$search.'%']
             ])->get();
 
         }else{
@@ -45,26 +45,15 @@ class Controlecaixa extends Controller
     }
 
     public function store(Request $request) {
-
+        dd($request);
         $vendas = Caixa::create([
-            'valor_total' => $request -> $valor_total,
+            'valor_total' => $request-> $valor_total,
             'forma_pagamento' => $request-> $forma_pagamento,
             'parcelas' => $request-> $parcelas,
             'valor_parcelas' => $request-> $parcelas_valor,
             'data_venda' => $request -> $data_venda
-
-            
-
         ]);
-
-        $produto_vendido = Venda::create([
-
-            'produto' => $request -> $produto,
-            'quantidade' => $request -> $quantidade, 
-            'data_venda' => $request -> $data_venda
-
-        ]);
-
+        // return
 
     }
 
