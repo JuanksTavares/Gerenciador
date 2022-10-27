@@ -10,10 +10,14 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <div class="form-group">
-                        <label for="nome">Buscar Produto</label>
-                        <input type="text" class="form-control" name="nome" placeholder="Buscar produto por: nome ou codigo de barra" id="busca"required>
-                        
+                    <div class="form-group col-md-4">
+                        <label id="search_vendas" for="exampleDataList" class="form-label">Busca</label>
+                        <input class="form-control" list="datalistOptions" id="search_vendas" placeholder="buscar nome" onChange={test()}>
+                        <datalist id="datalistOptions">
+                            @foreach ($produtos as $produto )
+                                <option value="{{ $produto->nome }}" >
+                            @endforeach
+                        </datalist>
                     </div>
                     <meta name="csrf-token" content="{{ csrf_token() }}">
                     <div class="md-col-12">
@@ -81,7 +85,6 @@
             </div>
         </div>
     </div>
-
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -98,7 +101,7 @@
                                 <td>Excluir</td>
                             </tr>
                             <tr>  
-                            @foreach ($pedidos as $pedido)
+                            @foreach ($produtos as $produto)
                                 <tr>
                                     <td>produto id</td>
                                     <td>produto nome</td>
@@ -123,5 +126,54 @@
                 </div>
             </div>
         </div>
-    </div>  
+    </div>
+
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    
+                    <div>
+                        <div>
+                        <table class="table" >
+                            <tr>
+                                <td>id</td>
+                                <td>data</td>
+                                <td>Valor Total</td>
+                                <td>Forma de Pagamento</td>
+                                <td>Itens</td>
+                            </tr>
+                            <tr>  
+                            @foreach ($pedidos as $pedido)
+                                <tr>
+                                    <td>id_venda</td>
+                                    <td>data_venda</td>
+                                    <td>valor_total</td>
+                                    <td>forma_pagamento</td>
+                                    <td>link para os itens</td>
+                                </tr>
+                                @endforeach
+                            </tr>
+                        </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+    <script>
+        
+            
+        function test(){
+            let itens = document.getElementById('search_vendas')
+            console.log(itens)
+
+        }
+        
+    </script>
 </x-app-layout>
+
+    
+
+

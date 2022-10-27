@@ -44,9 +44,6 @@ class Controleproduto extends Controller
             'estoque_max' => $request->Estoque_max,
             'estoque_min' => $request->Estoque_min,
             'origem_produto' => $request->Origem,
-            'ncm' => $request->NCM,
-            'cest' => $request->CEST,
-            'unidade_medida' => $request->Unidade,
             'categoria' => $request->Categoria
         ]);
     
@@ -71,9 +68,6 @@ class Controleproduto extends Controller
         $produto->estoque_max = $request['Estoque_max'];
         $produto->estoque_min = $request['Estoque_min'];
         $produto->origem_produto = $request['Origem'];
-        $produto->ncm = $request['NCM'];
-        $produto->cest = $request['CEST'];
-        $produto->unidade_medida = $request['Unidade'];
         $produto->categoria = $request['Categoria'];
         $produto->update();
 

@@ -44,9 +44,6 @@
                             <td>Estoque Maximo</td>
                             <td>Estoque Minimo</td>
                             <td>Origem Produto</td>
-                            <td>NCM</td>
-                            <td>CEST</td>
-                            <td>Unidade de Medida</td>
                             <td>Editar/Deletar</td>
                         </tr>
                         <tr>
@@ -62,9 +59,6 @@
                                 <td>{{ $produto->estoque_max}}</td>
                                 <td>{{ $produto->estoque_min}}</td>
                                 <td>{{ $produto->origem_produto}}</td>
-                                <td>{{ $produto->ncm}}</td>
-                                <td>{{ $produto->cest}}</td>
-                                <td>{{ $produto->unidade_medida}}</td>
                                 <td>
                                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                         <a href="/buscar/edit/{{$produto->id}}"class="btn btn-outline-success" type="button">Editar</a>

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Controleproduto;
 use App\Http\Controllers\Controlecaixa;
+use App\Http\Controllers\Controlevendas;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,7 +38,11 @@ Route::group(['middleware' => 'auth'], function(){
         // })->name('dashboard');
         Route::get('/carrinho', [Controlecaixa::class,'index'])->name('caixa.index');
 
-         Route::post('/dashboard', [Controlecaixa::class,'store'])->name('caixa.store');
+        Route::post('/dashboard', [Controlecaixa::class,'store'])->name('caixa.store');
+
+
+
+         Route::get('/vendas',[Controlevendas::class,'index'])->name('venda.index');
 });
 
 require __DIR__.'/auth.php';

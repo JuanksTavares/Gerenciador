@@ -47,14 +47,6 @@
                         <label for="Origem">Origem do Produto</label>
                         <input type="text" class="form-control" name="Origem" id="Origem" value="{{$produto->origem_produto}}">
 
-                        <label for="NCM">NCM(nomenclatura Común do Mercosul)</label>
-                        <input type="text" class="form-control" name="NCM" id="NCM" value="{{$produto->ncm}}">
-
-                        <label for="CEST">CEST(Cod.Especificador da Substituição Tributária)</label>
-                        <input type="text" class="form-control" name="CEST" id="CEST" value="{{$produto->cest}}">
-
-                        <label for="Unidade">Unidade de Medido</label>
-                        <input type="text" class="form-control" name="Unidade" id="Unidade" value="{{$produto->unidade_medida}}">
                     </div>
                     <button class="btn btn-outline-success">Salvar</button>
                   </form>

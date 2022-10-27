@@ -23,9 +23,6 @@ return new class extends Migration
             $table->float('estoque_max');
             $table->float('estoque_min');
             $table->string('origem_produto');
-            $table->float('ncm');
-            $table->string('cest');
-            $table->string('unidade_medida');
             $table->string('categoria');
             $table->timestamps();
         });
