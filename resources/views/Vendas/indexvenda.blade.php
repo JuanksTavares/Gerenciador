@@ -2,7 +2,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Buscar') }}
+            {{ __('Vendas') }}
         </h2>
     </x-slot>
 
@@ -13,8 +13,8 @@
                     
                     <nav class="navbar bg-light">
                         <div class="container-fluid">
-                            <a href="/buscar/adicionar" class="btn btn-dark mb-2">adicionar</a>
-                            <form class="d-flex" role="search" action = "/buscar" method = "GET">
+                            <a href="/dashboard" class="btn btn-dark mb-2">adicionar</a>
+                            <form class="d-flex" role="search" action = "/vendas" method = "GET">
                                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name = "search">
                             </form>
                         </div>
@@ -29,7 +29,7 @@
                 <div class="p-6 bg-white border-b border-gray-200">
                     @if ($search)
                     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                        Buscando por : {{$search}}
+                        Buscando por : <a href="/vendas" class="btn btn-outline-dark"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/></svg>{{$search}}</a>
                     </h2>
                     @endif
                     <table class="table" >
@@ -45,11 +45,11 @@
                         <tr>
                             @foreach ($venda as $vendas)
                             <tr>
-                                <td>{{$vendas['id_vendas']}}</td>
-                                <td>{{ $vendas->data_venda}}</td>
-                                <td>{{ $vendas->valor_total}}</td>
-                                <td>{{ $vendas->forma_pagamento}}</td>
-                                <td>{{ $vendas->parcelas}}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                                 <td>
                                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                         <a href="/vendas/lista{{$produtos_vendidos->id_vendas}}"class="btn btn-outline-success" type="button">Lista de Produtos</a>
@@ -59,7 +59,7 @@
                             @endforeach
                         </tr>
                     </table>
-                    <a href="/buscar" class="btn btn-dark mb-2">Voltar</a>
+                    <a href="/vendas" class="btn btn-dark mb-2">Voltar</a>
                 </div>
             </div>
         </div>

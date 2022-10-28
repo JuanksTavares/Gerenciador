@@ -10,12 +10,20 @@ class Controlevendas extends Controller
 {
     public function index() {
 
-        
-        
-        $venda = Venda::all();
-        
+        $search = request('search');
 
-        return view('Vendas.indexvenda');
+        if($search){
+            $venda = Venda::where([
+                ['data_venda', 'like', '%'.$search.'%']
+            ])->get();
+
+        }else{
+            $venda = Venda::all();
+            return view('Vendas.indexvenda', [
+                'venda' => $venda,
+                'search' => $search
+            ]);
+        }
     }
 }
 
