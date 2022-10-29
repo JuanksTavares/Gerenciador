@@ -13,12 +13,12 @@ class Controlevendas extends Controller
         $search = request('search');
 
         if($search){
-            $venda = Venda::where([
+            $venda = Caixa::where([
                 ['data_venda', 'like', '%'.$search.'%']
             ])->get();
 
         }else{
-            $venda = Venda::all();
+            $venda = Caixa::all();
             return view('Vendas.indexvenda', [
                 'venda' => $venda,
                 'search' => $search

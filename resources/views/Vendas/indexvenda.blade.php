@@ -45,11 +45,11 @@
                         <tr>
                             @foreach ($venda as $vendas)
                             <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>{{$venda}}</td>
+                                <td>{{$venda}}</td>
+                                <td>{{$venda->valor_total}}</td>
+                                <td>{{$venda->forma_pagamento}}</td>
+                                <td>{{$venda->parcelas}}</td>
                                 <td>
                                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                         <a href="/vendas/lista{{$produtos_vendidos->id_vendas}}"class="btn btn-outline-success" type="button">Lista de Produtos</a>
