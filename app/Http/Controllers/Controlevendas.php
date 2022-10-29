@@ -25,6 +25,7 @@ class Controlevendas extends Controller
             ]);
         }
     }
+    
 }
 
 

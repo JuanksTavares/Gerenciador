@@ -21,7 +21,7 @@
         </style>
     </head>
     <body class="antialiased">
-        <div class="p-6 bg-white border-b border-gray-200"> <!-- class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0" -->
+        <div class="p-6 bg-white border-b border-gray-200" class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
             @if (Route::has('login'))
                 <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
                     @auth
@@ -42,8 +42,6 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
                         <div class="form-group">
-                            <label for="nome">Buscar Produto</label>
-                            <input type="text" class="form-control" name="nome" placeholder="Buscar produto por: nome ou codigo de barra" id="nome"required>
                             
                         </div>
                     </div>
@@ -52,6 +50,8 @@
         </div>
     </body>
 </html>
+
+
 
 <!-- <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex justify-center pt-8 sm:justify-start sm:pt-0">

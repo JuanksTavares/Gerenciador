@@ -10,25 +10,25 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <div class="form-group col-md-4">
-                        <label id="search_vendas" for="exampleDataList" class="form-label">Busca</label>
-                        <input class="form-control" list="datalistOptions" id="search_vendas" placeholder="buscar nome" onChange={test()}>
-                        <datalist id="datalistOptions">
-                            @foreach ($produtos as $produto )
-                                <option value="{{ $produto->nome }}" >
-                            @endforeach
-                        </datalist>
-                    </div>
                     <meta name="csrf-token" content="{{ csrf_token() }}">
                     <div class="md-col-12">
                         <form id="vendaForm" method="post">
                             {{csrf_field()}}
+                            <div class="form-group col-md-4">
+                                <label id="search_vendas" for="exampleDataList" class="form-label">Busca</label>
+                                <input class="form-control" list="datalistOptions" id="itemproduto" name="itemproduto[]"  placeholder="buscar nome" onChange={get_data()}>
+                                <datalist id="datalistOptions">
+                                    @foreach ($produtos as $produto )
+                                        <option value="{{$produto->nome}}" >{{$produto->nome}}</option> 
+                                    @endforeach
+                                </datalist>
+                            </div>
                             <div id="topaste"></div>
                             <div class="row">
                                 
                                 <div class="col-md-2 col-md-offset-6">
                                     <label>Total de itens:</label>
-                                    <input id="item_total" class="form-control"/>
+                                    <input id="item_total" name="quantidade_itens" class="form-control"/>
                                 </div>
                                 <div class="col-md-2 ">
                                     <label>Total:</label>
@@ -92,7 +92,7 @@
                     
                     <div>
                         <div>
-                        <table class="table" >
+                        <table class="table" id="table_produto">
                             <tr>
                                 <td>Produto</td>
                                 <td>Preco</td>
@@ -101,7 +101,7 @@
                                 <td>Excluir</td>
                             </tr>
                             <tr>  
-                            @foreach ($produtos as $produto)
+                            <!-- @foreach ($produtos as $produto)
                                 <tr>
                                     <td>produto id</td>
                                     <td>produto nome</td>
@@ -118,7 +118,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                                @endforeach
+                                @endforeach -->
                             </tr>
                         </table>
                         </div>
@@ -164,11 +164,18 @@
     </div> 
     <script>
         
-            
-        function test(){
-            let itens = document.getElementById('search_vendas')
-            console.log(itens)
+        function get_data(){
+            var val = document.getElementById("itemproduto");
 
+            var table = document.getElementById("table_produto");
+            var row = table.insertRow(-1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);    
+            var cell3 = row.insertCell(2);    
+
+            cell1.innerHTML = `<span name="produto[]">${val.value}</span>`;
+            cell2.innerHTML = "<in>";    
+            cell3.innerHTML = '<input type="int" class="form-control" name="quantidade[]" id="quantidade"required>'
         }
         
     </script>

@@ -24,5 +24,8 @@ class Produto extends Model
         'unidade_medida',
         'categoria'
     ];
+
+    public $timestamps = false;
+
 }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Caixa;
 use App\Models\Venda;
 use App\Models\Produto;
+use App\Models\ProdutoVenda;
 use Illuminate\Http\Request;
 
 
@@ -47,13 +48,25 @@ class Controlecaixa extends Controller
     }
 
     public function store(Request $request) {
+        dd($request);
         $vendas = Caixa::create([
-            'valor_total' => $request-> $valor_total,
-            'forma_pagamento' => $request-> $forma_pagamento,
-            'parcelas' => $request-> $parcelas,
-            'valor_parcelas' => $request-> $parcelas_valor,
-            'data_venda' => $request -> $data_venda
+            'valor_total' => $request->total,
+            'forma_pagamento' => $request->pagamento,
+            'parcelas' => $request->parcelas,
+            'parcelas_valor' => $request->parcelas,
+            'data_venda'=> date("Y-m-d"),     
+
         ]);
+        
+        $produto = ProdutoVenda::create([
+            'produto'=> $request->itemproduto,     
+            'quantidade'=> $request->quantidade_itens,     
+            'id_venda'=> $vendas->id,     
+            'data_venda'=> date("Y-m-d"),     
+        ]);
+        $produtos = Produto::all();
+        
+        return view('dashboard', compact('produtos'));
         // return
 
     }

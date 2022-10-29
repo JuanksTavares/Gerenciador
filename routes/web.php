@@ -21,7 +21,7 @@ Route::get('/', function () {
 
 Route::group(['middleware' => 'auth'], function(){
     
-
+        // Tela Buscar e adicionar produto
         Route::get('/buscar', [Controleproduto::class, 'index'])->name('index');
         Route::get('/buscar/adicionar', [Controleproduto::class, 'adicionar'])->name('adicionar');
         Route::post('/buscar/adicionar', [Controleproduto::class, 'store'])->name('store');
@@ -41,7 +41,7 @@ Route::group(['middleware' => 'auth'], function(){
         Route::post('/dashboard', [Controlecaixa::class,'store'])->name('caixa.store');
 
 
-
+        //Tela Venda
          Route::get('/vendas',[Controlevendas::class,'index'])->name('venda.index');
 });
 
