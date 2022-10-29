@@ -50,6 +50,7 @@ class Controlecaixa extends Controller
     public function store(Request $request) {
         dd($request);
         $vendas = Caixa::create([
+
             'valor_total' => $request->total,
             'forma_pagamento' => $request->pagamento,
             'parcelas' => $request->parcelas,
