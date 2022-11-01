@@ -15,76 +15,84 @@ class Controlecaixa extends Controller
     //     $this->middleware('auth');
     // }
 
-    public function index(){
-        
+    public function index()
+    {
+
         // $pedidos = Caixa::where([
         //     'status' =>'RE',
         //     'user_id' => Auth::id()
         // ])->get();
-        $pedidos= Caixa::all();
+        $pedidos = Caixa::all();
         $produtos = Produto::all();
-        
+
         return view('dashboard', compact('pedidos', 'produtos'));
     }
 
-    public function busca(){
-        
+    public function busca()
+    {
+
 
         $search = request('busca');
 
-        if($search){
+        if ($search) {
             $produto = Produto::where([
-                ['nome', 'like', '%'.$search.'%'] && ['Cod_barra', 'like', '%'.$search.'%']
+                ['nome', 'like', '%' . $search . '%'] && ['Cod_barra', 'like', '%' . $search . '%']
             ])->get();
-
-        }else{
+        } else {
             $produto = Produto::all();
             return view('produto.adicionar');
         }
     }
 
-    public function adicionar(){
-
+    public function adicionar()
+    {
     }
 
-    public function store(Request $request) {
-        dd($request);
+    public function store(Request $request)
+    {
+        $produtos = $request->produto;
         $vendas = Caixa::create([
 
             'valor_total' => $request->total,
             'forma_pagamento' => $request->pagamento,
             'parcelas' => $request->parcelas,
             'parcelas_valor' => $request->parcelas,
-            'data_venda'=> date("Y-m-d"),     
+            'data_venda' => date("Y-m-d"),
 
         ]);
-        
-        $produto = ProdutoVenda::create([
-            'produto'=> $request->itemproduto,     
-            'quantidade'=> $request->quantidade_itens,     
-            'id_venda'=> $vendas->id,     
-            'data_venda'=> date("Y-m-d"),     
-        ]);
+        $produtos = $request->produto;
+        for ($i = 0; $i < count($produtos); $i++) {
+            $nome_produto = $produtos[$i];
+            $quantidade = $request->quantidade[$i];
+            $produto = ProdutoVenda::create([
+                'produto' => $nome_produto,
+                'quantidade' => $quantidade,
+                'id_venda' => $vendas->id,
+                'data_venda' => date("Y-m-d"),
+            ]);
+        }
+
+        $pedidos = Caixa::all();
         $produtos = Produto::all();
-        
-        return view('dashboard', compact('produtos'));
-        // return
 
+        return view('dashboard', compact('pedidos', 'produtos'));
     }
 
-    public function data(){
+    public function data()
+    {
         return date('Y-m-d');
     }
 
-    public function show($id){
+    public function show($id)
+    {
 
         $produto = Produto::findOrFail($id);
-
     }
 
-    public function additens(){
+    public function additens()
+    {
 
-        if (!isset($_SESSION['venda']) ||empty($_SESSION['venda'])) {
+        if (!isset($_SESSION['venda']) || empty($_SESSION['venda'])) {
             return;
         }
 
@@ -94,8 +102,8 @@ class Controlecaixa extends Controller
 
         /**
          * Gera um código unico de venda que será usado em todos os registros desse Loop
-        */
-        $codigoVenda = uniqid(rand(), true).date('s').date('d.m.Y');
+         */
+        $codigoVenda = uniqid(rand(), true) . date('s') . date('d.m.Y');
 
         $valorRecebido = formataValorMoedaParaGravacao($this->post->data()->valor_recebido);
         $troco = formataValorMoedaParaGravacao($this->post->data()->troco);
@@ -112,7 +120,7 @@ class Controlecaixa extends Controller
                 'codigo_venda' => $codigoVenda
             ];
 
-            if ( ! empty($valorRecebido) && ! empty($troco)) {
+            if (!empty($valorRecebido) && !empty($troco)) {
                 $dados['valor_recebido'] = $valorRecebido;
                 $dados['troco'] = $troco;
             }
@@ -123,14 +131,11 @@ class Controlecaixa extends Controller
                 $status = true;
 
                 unset($_SESSION['venda']);
-
             } catch (\Exception $e) {
                 dd($e->getMessage());
             }
         }
 
         echo json_encode(['status' => $status]);
-    
     }
-
 }
