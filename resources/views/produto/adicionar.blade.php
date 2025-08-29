@@ -1,5 +1,5 @@
 @extends('layout')
-
+<title>Adicionar Produto</title>
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -20,31 +20,31 @@
                           <input type="text" class="form-control" name="nome" id="nome"required>
 
                           <label for="Cod_barra">Codigo de Barra</label>
-                          <input type="text" class="form-control" name="Cod_barra" id="Cod_barra">
+                          <input type="number" class="form-control" name="Cod_barra" id="Cod_barra">
 
                           <label for="Valor_venda">Valor de Venda</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text">R$</span>
-                            <input type="text" class="form-control" name="Valor_venda" id="Valor_venda">
+                            <input type="number" class="form-control" name="Valor_venda" id="Valor_venda">
                           </div>
 
                           <label for="Custo_medio">Custo Medio</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text">R$</span>
-                            <input type="text" class="form-control" name="Custo_medio" id="Custo_medio">
+                            <input type="number" class="form-control" name="Custo_medio" id="Custo_medio">
                           </div>
 
                           <label for="Categoria">Categoria para classificação do produto</label>
                           <input type="text" class="form-control" name="Categoria" id="Categoria">
 
                           <label for="Estoque">Estoque Disponivel</label>
-                          <input type="text" class="form-control" name="Estoque" id="Estoque">
+                          <input type="number" class="form-control" name="Estoque" id="Estoque">
 
                           <label for="Estoque_min">Estoque Minino</label>
-                          <input type="text" class="form-control" name="Estoque_min" id="Estoque_min">
+                          <input type="number" class="form-control" name="Estoque_min" id="Estoque_min">
 
                           <label for="Estoque_max">Estoque Maximo</label>
-                          <input type="text" class="form-control" name="Estoque_max" id="Estoque_max">
+                          <input type="number" class="form-control" name="Estoque_max" id="Estoque_max">
 
                           <label for="Origem">Origem do Produto</label>
                           <input type="text" class="form-control" name="Origem" id="Origem">

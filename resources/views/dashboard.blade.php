@@ -1,4 +1,5 @@
 @extends('layout')
+<title>Caixa</title>
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -171,6 +172,7 @@
             if (val == "" || val == undefined) {
                 return;
             }
+
             var valor = val.split("|");
             var produto = valor[0]
             var valor_produto = valor[1].replace('R$ ', '');
@@ -194,7 +196,7 @@
         }
 
         function updateInput(numero, index_valor) {
-            console.log(index_valor)
+            console.info;(index_valor)
             var input_valor = document.getElementsByName('valor_produto[]');
             var input_valor_total = document.getElementsByName('valor_produto_total[]');
             var valor_produto = parseInt(input_valor[index_valor].innerText)
