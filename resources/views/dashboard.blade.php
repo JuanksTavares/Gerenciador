@@ -1,229 +1,204 @@
 @extends('layout')
-<title>Caixa</title>
+@section('title', 'Dashboard')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Caixa') }}
+            {{ __('Dashboard') }}
         </h2>
     </x-slot>
-    <form id="vendaForm" method="post">
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 bg-white border-b border-gray-200">
-                        <meta name="csrf-token" content="{{ csrf_token() }}">
-                        <div class="md-col-12">
-                            {{csrf_field()}}
-                            <div class="form-group col-md-4">
-                                <label id="search_vendas" for="exampleDataList" class="form-label">Busca</label>
-                                <input class="form-control" list="datalistOptions" id="itemproduto" name="itemproduto[]" placeholder="buscar nome" onChange={get_data()}>
-                                <datalist id="datalistOptions">
-                                    @foreach ($produtos as $produto )
-                                    <option value="{{$produto->nome}}|R$ {{$produto->valor_venda}}" label="{{$produto->nome}}">{{$produto->nome}} dsadasdas</option>
-                                    @endforeach
-                                </datalist>
-                            </div>
-                            <div id="topaste"></div>
-                            <div class="row">
-
-                                <div class="col-md-2 col-md-offset-6">
-                                    <label>Total de itens:</label>
-                                    <input id="item_total" name="quantidade_itens" class="form-control" />
-                                </div>
-                                <div class="col-md-2 ">
-                                    <label>Total:</label>
-                                    <input id="valor_total" name="total_itens" data-mask="000.000,00" data-mask-reverse="true" class="form-control" />
-                                </div>
-                                <div class="col-md-2 ">
-                                    <label>Pagamento:</label>
-                                    <select id="forma_pagamento" name="pagamento" class="form-control">
-                                        <option value="DI">Dinheiro</option>
-                                        <option value="CR">Crédito</option>
-                                        <option value="DE">Débito</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label>Parcelas:</label>
-                                    <select id="parcelas" name="parcelas" class="form-control" readonly="readonly">
-                                        <option value="1">1x</option>
-                                        <option value="2">2x</option>
-                                        <option value="3">3x</option>
-                                        <option value="4">4x</option>
-                                        <option value="5">5x</option>
-                                        <option value="6">6x</option>
-                                        <option value="7">7x</option>
-                                        <option value="8">8x</option>
-                                        <option value="9">9x</option>
-                                        <option value="10">10x</option>
-                                        <option value="11">11x</option>
-                                        <option value="12">12x</option>
-
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label>Valor da parcela:</label>
-                                    <input id="valor_parcelas" name="valor_parcelas" data-mask="000.000,00" data-mask-reverse="true" class="form-control" />
-                                </div>
-                                <div class="col-md-2">
-                                    <label>Total a pagar:</label>
-                                    <input id="total_pagar" data-mask="000.000,00" data-mask-reverse="true" name="total" class="form-control" />
-                                </div>
-
-                                <div class="col-md-2 col-md-offset-2">
-                                    <label>Valor recebido:</label>
-                                    <input id="val_recebido" data-mask="000.000,00" data-mask-reverse="true" name="valor_dinheiro" class="form-control" />
-                                </div>
-                                <div class="col-md-2">
-                                    <label>Troco:</label>
-                                    <input id="troco" data-mask="000.000,00" data-mask-reverse="true" name="troco" class="form-control" readonly />
-                                </div>
-                            </div>
-                            <button class="btn btn-success" type="submit">Enviar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 bg-white border-b border-gray-200">
-
-                        <div>
-                            <div>
-                                <table class="table" id="table_produto">
-                                    <tr>
-                                        <td>Produto</td>
-                                        <td>Preco</td>
-                                        <td>Qtd</td>
-                                        <td>SubTotal</td>
-                                        <td>Excluir</td>
-                                    </tr>
-                                    <tr>
-                                        <!-- @foreach ($produtos as $produto)
-                                <tr>
-                                    <td>produto id</td>
-                                    <td>produto nome</td>
-                                    <td>
-                                        <input type="int" class="form-control" name="quantidade" id="quantidade"required>
-                                    </td>
-                                    <td>produto valor_venda</td>
-                                    <td>
-                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                                @csrf
-                                                @method('DELETE')
-                                            <button class="btn btn-outline-danger" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/></svg></button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach -->
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-
-
-    <div class="py-12">
+    <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-
-                    <div>
-                        <div>
-                            <table class="table">
-                                <tr>
-                                    <td>id</td>
-                                    <td>data</td>
-                                    <td>Valor Total</td>
-                                    <td>Forma de Pagamento</td>
-                                    <td>Itens</td>
-                                </tr>
-                                <tr>
-                                    @foreach ($pedidos as $pedido)
-                                <tr>
-                                    <td>{{$pedido->id_venda}}</td>
-                                    <td>{{$pedido->data_venda}}</td>
-                                    <td>{{$pedido->valor_total}}</td>
-                                    <td>{{$pedido->forma_pagamento}}</td>
-                                    <!-- <td>link para os itens</td> -->
-                                </tr>
-                                @endforeach
-                                </tr>
-                            </table>
+            <!-- Cards de Métricas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <!-- Vendas do Mês -->
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
                         </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Vendas do Mês</h3>
+                            <p class="text-2xl font-bold text-gray-900">R$ 44.444,00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Produtos em Estoque -->
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Produtos em Estoque</h3>
+                            <p class="text-2xl font-bold text-gray-900">2.222</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Produtos com Estoque Baixo -->
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Estoque Baixo</h3>
+                            <p class="text-2xl font-bold text-gray-900">111</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lucratividade -->
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Lucratividade</h3>
+                            <p class="text-2xl font-bold text-gray-900">R$ 0.000,00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid Principal -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Coluna 1: Ações Rápidas -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- Ações Rápidas -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Ações Rápidas</h3>
+                        <div class="space-y-3">
+                            <a href="{{ route('caixa.index') }}" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Nova Venda
+                            </a>
+                            <a href="{{ route('produtos.adicionar') }}" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                Cadastrar Produto
+                            </a>
+                            <a href="#" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Cadastrar Fornecedor
+                            </a>
+                            <a href="#" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                                Consultar Estoque
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Produtos Mais Vendidos -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Produtos Mais Vendidos</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium">Bala</span>
+                                <span class="text-sm text-gray-500">1.234 unidades</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium">Gelo</span>
+                                <span class="text-sm text-gray-500">987 unidades</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium">Chocolate</span>
+                                <span class="text-sm text-gray-500">765 unidades</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 2: Gráfico e Relatório -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Gráfico de Vendas Mensais -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Vendas Mensais (Últimos 6 meses)</h3>
+                        <div class="h-64 flex items-end justify-between">
+                            <!-- Barras do gráfico (simplificado) -->
+                            <div class="flex-1 mx-1 flex flex-col items-center">
+                                <div class="w-full bg-blue-500 rounded-t" style="height: 60%"></div>
+                                <span class="text-xs mt-2">1 Mês</span>
+                            </div>
+                            <div class="flex-1 mx-1 flex flex-col items-center">
+                                <div class="w-full bg-blue-500 rounded-t" style="height: 80%"></div>
+                                <span class="text-xs mt-2">2 Mês</span>
+                            </div>
+                            <div class="flex-1 mx-1 flex flex-col items-center">
+                                <div class="w-full bg-blue-500 rounded-t" style="height: 45%"></div>
+                                <span class="text-xs mt-2">3 Mês</span>
+                            </div>
+                            <div class="flex-1 mx-1 flex flex-col items-center">
+                                <div class="w-full bg-blue-500 rounded-t" style="height: 70%"></div>
+                                <span class="text-xs mt-2">4 Mês</span>
+                            </div>
+                            <div class="flex-1 mx-1 flex flex-col items-center">
+                                <div class="w-full bg-blue-500 rounded-t" style="height: 90%"></div>
+                                <span class="text-xs mt-2">5 Mês</span>
+                            </div>
+                            <div class="flex-1 mx-1 flex flex-col items-center">
+                                <div class="w-full bg-blue-500 rounded-t" style="height: 75%"></div>
+                                <span class="text-xs mt-2">6 Mês</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gerar Relatório -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Gerar Relatório</h3>
+                        <form class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Tipo de Relatório:</label>
+                                <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                    <option>Financeiro</option>
+                                    <option>Estoque</option>
+                                    <option>Vendas</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Período:</label>
+                                <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                    <option>1 Mês</option>
+                                    <option>3 Meses</option>
+                                    <option>6 Meses</option>
+                                    <option>1 Ano</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Formato:</label>
+                                <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                    <option>PDF</option>
+                                    <option>Excel</option>
+                                    <option>CSV</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                    Download
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-        var input_valor_total = document.getElementsByName('valor_produto_total[]');
 
-        function get_data() {
-            var val = document.getElementById("itemproduto").value;
-
-            if (val == "" || val == undefined) {
-                return;
-            }
-
-            var valor = val.split("|");
-            var produto = valor[0]
-            var valor_produto = valor[1].replace('R$ ', '');
-
-            var table = document.getElementById("table_produto");
-            var row = table.insertRow(-1);
-            var index_row = row.rowIndex - 2
-            var cell1 = row.insertCell(0);
-            var cell2 = row.insertCell(1);
-            var cell3 = row.insertCell(2);
-            var cell4 = row.insertCell(3);
-            var cell5 = row.insertCell(4);
-
-            cell1.innerHTML = `<input name="produto[]" value="${produto}" readonly>`;
-            cell2.innerHTML = `<input name="valor_produto[]" value="${valor_produto}" readonly>`;
-            cell3.innerHTML = `<input type="number" class="form-control" name="quantidade[]" onchange="updateInput(this.value,${index_row})" value="1" required>`
-            cell4.innerHTML = `<input name="valor_produto_total[]" value="${valor_produto}">`;
-            cell5.innerHTML = '<button class="btn btn-outline-danger">Deletar</button>';
-
-            this.atualizarValorTotal();
-        }
-
-        function updateInput(numero, index_valor) {
-            console.info;(index_valor)
-            var input_valor = document.getElementsByName('valor_produto[]');
-            var input_valor_total = document.getElementsByName('valor_produto_total[]');
-            var valor_produto = parseInt(input_valor[index_valor].innerText)
-            var valor_final_produto = valor_produto * numero
-            input_valor_total[index_valor].innerText = valor_final_produto
-            this.atualizarValorTotal();
-        }
-
-        function atualizarValorTotal() {
-            var input_valor_total = document.getElementsByName('valor_produto_total[]');
-            const valorTotalArray = [...input_valor_total];
-            var somaProdutos = valorTotalArray.map(valor => parseInt(valor.value)).reduce(function(soma, i) {
-                return soma + i;
-            });
-
-            var quantidade_total = document.getElementsByName('quantidade[]');
-            const quantidadeArray = [...quantidade_total];
-            var somaQuantidades = quantidadeArray.map(valor => parseInt(valor.value)).reduce(function(soma, i) {
-                return soma + i;
-            });
-
-            var quantidade = document.getElementById('item_total');
-            var total = document.getElementById('valor_total');
-            var total_pagar = document.getElementById('total_pagar');
-            quantidade.value = somaQuantidades
-            total.value = somaProdutos
-            total_pagar.value = somaProdutos
-        }
-    </script>
+    <style>
+        .bg-blue-100 { background-color: #dbeafe; }
+        .bg-green-100 { background-color: #dcfce7; }
+        .bg-yellow-100 { background-color: #fef9c3; }
+        .bg-purple-100 { background-color: #f3e8ff; }
+        
+        .text-blue-600 { color: #2563eb; }
+        .text-green-600 { color: #16a34a; }
+        .text-yellow-600 { color: #ca8a04; }
+        .text-purple-600 { color: #9333ea; }
+    </style>
 </x-app-layout>

@@ -23,30 +23,31 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route('caixa.index')" :active="request()->routeIs('caixa.index')">
                         {{ __('Caixa') }}
                     </x-nav-link>
                 </div>
                 <!-- aqui eu vou add os botoes para navegar entre as paginas -->
 
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('index')" :active="request()->routeIs('index')">
+                    <x-nav-link :href="route('produtos.index')" :active="request()->routeIs('index')">
                         {{ __('Estoque') }}
                     </x-nav-link>
                 </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('venda.index')" :active="request()->routeIs('venda.index')">
+                    <x-nav-link :href="route('vendas.index')" :active="request()->routeIs('venda.index')">
                         {{ __('Vendas') }}
                     </x-nav-link>
                 </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('store')" :active="request()->routeIs('store')">
-                        {{ __('Cadastro') }}
+                    <x-nav-link :href="route('fornecedores.index')" :active="request()->routeIs('fornecedor.index')">
+                        {{ __('Fornecedor') }}
                     </x-nav-link>
                 </div>
             </div>
+            
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ml-6">
