@@ -44,7 +44,7 @@
                             <td>Editar/Deletar</td>
                         </tr>
                         <tr>
-                            @foreach ($produtos as $produto)
+                            @forelse ($produtos as $produto)
                             <tr>
                                 <td>{{$produto['id']}}</td>
                                 <td>{{ $produto->nome}}</td>
@@ -63,7 +63,11 @@
                                     </div>
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="6" class="px-4 py-2 border text-center">Nenhum produto encontrado.</td>
+                            </tr>
+                            @endforelse
                         </tr>
                     </table>
                     <!--  <a href="/buscar" class="btn btn-dark mb-2">Voltar</a>  -->

@@ -33,7 +33,7 @@ class ControleCaixa extends Controller
         }
 
         $produtos = Produto::all();
-        return view('caixa', compact('vendas', 'produtos'));
+        return view('caixa.index', compact('vendas', 'produtos'));
     }
 
     public function buscarProdutos(Request $request)

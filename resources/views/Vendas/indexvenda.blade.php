@@ -44,7 +44,7 @@
                             <td>Produtos</td>
                         </tr>
                         <tr>
-                            @foreach ($venda as $vendas)
+                            @forelse ($venda as $vendas)
                             <tr>
                                 <td>{{$venda}}</td>
                                 <td>{{$venda}}</td>
@@ -57,10 +57,14 @@
                                     </div>
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="6" class="px-4 py-2 border text-center">Nenhum vendas encontrado.</td>
+                            </tr>
+                            @endforelse
                         </tr>
                     </table>
-                    <a href="/vendas" class="btn btn-dark mb-2">Voltar</a>
+                    <!-- <a href="/vendas" class="btn btn-dark mb-2">Voltar</a> -->
                 </div>
             </div>
         </div>
