@@ -7,25 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 class Produto extends Model
 {
     protected $table = 'produtos';
-
-    protected $guarded = [];
+    protected $except = [
+    'produtos/*' // ← Adicione esta linha
+    ];
 
     protected $fillable = [
         'nome',
-        'cod_barra',
-        'valor_venda',
-        'custo_medio',
-        'estoque_disponivel',
-        'estoque_max',
-        'estoque_min',
-        'origem_produto',
-        'ncm',
-        'cest',
-        'unidade_medida',
-        'categoria'
+        'descricao',
+        'preco',
+        'quantidade_estoque',
+        'estoque_minimo',
+        'fornecedor_id',
     ];
 
+    // Remova esta linha se sua tabela tem created_at e updated_at
     public $timestamps = false;
 
+    public function fornecedor()
+    {
+        return $this->belongsTo(Fornecedor::class);
+    }
 }
-

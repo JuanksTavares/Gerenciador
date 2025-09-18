@@ -59,7 +59,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="px-4 py-2 border text-center">Nenhum vendas encontrado.</td>
+                                <td colspan="6" class="px-4 py-2 border text-center">Nenhuma venda encontrado.</td>
                             </tr>
                             @endforelse
                         </tr>

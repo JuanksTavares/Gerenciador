@@ -56,13 +56,14 @@
                                     <td >{{ $fornecedor->email }}</td>
                                     <td >
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                        <a href="/buscar/edit/{{$produto->id}}"class="btn btn-outline-success" type="button">Editar</a>
-                                        <form action="/buscar/{{$produto->id}}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                        <button class="btn btn-outline-danger" type="submit">Deletar</button>
-                                        </form>
-                                    </div>
+                                            <a href="{{ route('fornecedores.edit', $fornecedor->id) }}" class="btn btn-outline-success btn-sm me-1">Editar</a>
+                                            <form action="{{ route('fornecedores.destroy', $fornecedor->id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este fornecedor?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="btn btn-outline-danger btn-sm" type="submit">Deletar</button>
+                                            </form>
+                                    
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty

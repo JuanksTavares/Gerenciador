@@ -40,13 +40,13 @@
                             <td>Preco</td>
                             <td>Estoque Disponivel</td>
                             <td>Estoque Minimo</td>
-                            <td>Origem Produto</td>
+                            <td>Fornecedor</td>
                             <td>Editar/Deletar</td>
                         </tr>
                         <tr>
                             @forelse ($produtos as $produto)
                             <tr>
-                                <td>{{$produto['id']}}</td>
+                                <td>{{ $produto['id']}}</td>
                                 <td>{{ $produto->nome}}</td>
                                 <td>{{ $produto->preco}}</td>
                                 <td>{{ $produto->quantidade_estoque}}</td>
@@ -54,11 +54,11 @@
                                 <td>{{ $produto->fornecedor_id}}</td>
                                 <td>
                                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                        <a href="/buscar/edit/{{$produto->id}}"class="btn btn-outline-success" type="button">Editar</a>
-                                        <form action="/buscar/{{$produto->id}}" method="POST">
+                                        <a href="{{route('produtos.edit', $produto->id) }}"class="btn btn-outline-success" type="button">Editar</a>
+                                        <form action="{{ route('produtos.destroy', $produto->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
-                                        <button class="btn btn-outline-danger" type="submit">Deletar</button>
+                                            <button class="btn btn-outline-danger" type="submit">Deletar</button>
                                         </form>
                                     </div>
                                 </td>

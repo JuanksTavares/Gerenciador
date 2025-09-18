@@ -43,11 +43,11 @@ class ControleProduto extends Controller
             'estoque_minimo' => 'required|integer|min:0',
             'fornecedor_id' => 'required|exists:fornecedors,id'
         ]);
-
+        
         // Criação do produto
         $produto = Produto::create([
             'nome' => $request->nome,
-            'descricao' => $request->descricao,
+            'descricao' => $request->descricao, // ← Adicione esta linha
             'preco' => $request->preco,
             'quantidade_estoque' => $request->quantidade_estoque,
             'estoque_minimo' => $request->estoque_minimo,
@@ -85,7 +85,7 @@ class ControleProduto extends Controller
         $produto = Produto::findOrFail($id);
         $produto->update([
             'nome' => $request->nome,
-            'descricao' => $request->descricao,
+            'descricao' => $request->descricao, // ← Adicione esta linha
             'preco' => $request->preco,
             'quantidade_estoque' => $request->quantidade_estoque,
             'estoque_minimo' => $request->estoque_minimo,
@@ -101,10 +101,10 @@ class ControleProduto extends Controller
         $produto = Produto::findOrFail($id);
         
         // Verificar se o produto está em vendas antes de excluir
-        if ($produto->itensVenda()->exists()) {
-            return redirect()->route('produtos.index')
-                ->with('error', 'Não é possível excluir o produto pois está associado a vendas.');
-        }
+        // if ($produto->itensVenda()->exists()) {
+        //     return redirect()->route('produtos.index')
+        //         ->with('error', 'Não é possível excluir o produto pois está associado a vendas.');
+        // }
         
         $produto->delete();
 
@@ -112,3 +112,8 @@ class ControleProduto extends Controller
             ->with('success', 'Produto excluído com sucesso!');
     }
 }
+
+// No método store
+
+
+// No método update
