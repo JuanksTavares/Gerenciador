@@ -10,11 +10,14 @@ return new class extends Migration
     {
         Schema::create('vendas', function (Blueprint $table) {
             $table->id();
-            $table->date('data');
+            $table->datetime('data_venda');
             $table->decimal('valor_total', 10, 2);
-            $table->string('status', 20);
-            $table->string('forma_pagamento', 20);
-            $table->foreignId('usuario_id')->constrained('usuarios');
+            $table->string('forma_pagamento', 2);
+            $table->integer('parcelas')->default(1);
+            $table->decimal('valor_recebido', 10, 2)->default(0);
+            $table->decimal('troco', 10, 2)->default(0);
+            $table->foreignId('usuario_id')->constrained('users');
+            $table->string('status', 2)->default('RE'); // RE=Realizada, CA=Cancelada
             $table->timestamps();
         });
     }

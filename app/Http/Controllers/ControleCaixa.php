@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Caixa;
 use App\Models\Venda;
 use App\Models\Produto;
 use App\Models\ItemVenda;
-use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class ControleCaixa extends Controller
 {
@@ -18,220 +17,156 @@ class ControleCaixa extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        try {
-            // Buscar vendas com status 'RE' (Realizada) do usuário logado
-            $vendas = Venda::with(['itens', 'usuario'])
-                ->where('status', 'RE')
-                ->where('usuario_id', Auth::id())
+        $searchTerm = $request->input('search');
+        $produtos = collect();
+        
+        // Buscar produtos se houver termo de busca
+        if ($searchTerm) {
+            $produtos = Produto::where('quantidade_estoque', '>', 0)
+                ->where(function($query) use ($searchTerm) {
+                    $query->where('nome', 'like', '%' . $searchTerm . '%');
+                })
+                ->orderBy('nome')
                 ->get();
-                
-        } catch (\Illuminate\Database\QueryException $e) {
-            $vendas = collect();
-            Log::error('Erro ao buscar vendas: ' . $e->getMessage());
         }
-
-        $produtos = Produto::all();
-        return view('caixa.index', compact('vendas', 'produtos'));
-    }
-
-    public function buscarProdutos(Request $request)
-    {
-        $search = $request->input('busca');
-
-        if ($search) {
-            $produtos = Produto::where('nome', 'like', '%' . $search . '%')
-                ->orWhere('codigo_barras', 'like', '%' . $search . '%')
-                ->get();
-        } else {
-            $produtos = Produto::all();
-        }
-
-        return response()->json($produtos);
-    }
-
-    public function storeVenda(Request $request)
-    {
-        // Validação dos dados
-        $request->validate([
-            'produtos' => 'required|array',
-            'produtos.*.id' => 'required|exists:produtos,id',
-            'produtos.*.quantidade' => 'required|integer|min:1',
-            'valor_total' => 'required|numeric|min:0',
-            'forma_pagamento' => 'required|string|max:20',
-            'parcelas' => 'nullable|integer|min:1'
-        ]);
-
-        try {
-            // Iniciar transação
-            \DB::beginTransaction();
-
-            // Criar a venda
-            $venda = Venda::create([
-                'data' => now(),
-                'valor_total' => $request->valor_total,
-                'status' => 'RE', // Realizada
-                'forma_pagamento' => $request->forma_pagamento,
-                'usuario_id' => Auth::id(),
-                'parcelas' => $request->parcelas ?? 1
-            ]);
-
-            // Adicionar itens da venda
-            foreach ($request->produtos as $item) {
-                $produto = Produto::findOrFail($item['id']);
-                
-                // Criar item da venda
-                ItemVenda::create([
-                    'quantidade' => $item['quantidade'],
-                    'preco_unitario' => $produto->preco,
-                    'subtotal' => $item['quantidade'] * $produto->preco,
-                    'venda_id' => $venda->id,
-                    'produto_id' => $produto->id
-                ]);
-
-                // Atualizar estoque
-                $produto->decrement('quantidade_estoque', $item['quantidade']);
-            }
-
-            // Commit da transação
-            \DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Venda realizada com sucesso!',
-                'venda_id' => $venda->id
-            ]);
-
-        } catch (\Exception $e) {
-            // Rollback em caso de erro
-            \DB::rollBack();
-            Log::error('Erro ao processar venda: ' . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao processar venda: ' . $e->getMessage()
-            ], 500);
-        }
+        
+        $carrinho = Session::get('carrinho', []);
+        
+        return view('caixa.index', compact('produtos', 'carrinho', 'searchTerm'));
     }
 
     public function adicionarItemCarrinho(Request $request)
     {
-        $request->validate([
-            'produto_id' => 'required|exists:produtos,id',
-            'quantidade' => 'required|integer|min:1'
-        ]);
+        try {
+            $produto = Produto::findOrFail($request->produto_id);
+            $quantidade = $request->quantidade ?? 1;
+            
+            // Verificar estoque
+            if ($produto->quantidade_estoque < $quantidade) {
+                return redirect()->back()->with('error', 'Estoque insuficiente. Disponível: ' . $produto->quantidade_estoque);
+            }
 
-        $produto = Produto::findOrFail($request->produto_id);
+            $carrinho = Session::get('carrinho', []);
 
-        // Verificar estoque
-        if ($produto->quantidade_estoque < $request->quantidade) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Estoque insuficiente. Disponível: ' . $produto->quantidade_estoque
-            ], 400);
+            if (isset($carrinho[$produto->id])) {
+                $carrinho[$produto->id]['quantidade'] += $quantidade;
+                $carrinho[$produto->id]['subtotal'] = $carrinho[$produto->id]['quantidade'] * $produto->preco;
+            } else {
+                $carrinho[$produto->id] = [
+                    'id' => $produto->id,
+                    'nome' => $produto->nome,
+                    'preco' => $produto->preco,
+                    'quantidade' => $quantidade,
+                    'subtotal' => $produto->preco * $quantidade
+                ];
+            }
+
+            Session::put('carrinho', $carrinho);
+
+            return redirect()->route('caixa.index')->with('success', 'Produto adicionado ao carrinho!');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Erro ao adicionar produto: ' . $e->getMessage());
         }
-
-        // Adicionar ao carrinho (session)
-        $carrinho = session()->get('carrinho', []);
-
-        if (isset($carrinho[$produto->id])) {
-            $carrinho[$produto->id]['quantidade'] += $request->quantidade;
-        } else {
-            $carrinho[$produto->id] = [
-                'id' => $produto->id,
-                'nome' => $produto->nome,
-                'preco' => $produto->preco,
-                'quantidade' => $request->quantidade,
-                'subtotal' => $produto->preco * $request->quantidade
-            ];
-        }
-
-        session()->put('carrinho', $carrinho);
-
-        return response()->json([
-            'success' => true,
-            'carrinho' => $carrinho,
-            'total_itens' => count($carrinho),
-            'total_venda' => array_sum(array_column($carrinho, 'subtotal'))
-        ]);
     }
 
-    public function removerItemCarrinho(Request $request)
+    public function removerItemCarrinho($id)
     {
-        $carrinho = session()->get('carrinho', []);
+        $carrinho = Session::get('carrinho', []);
 
-        if (isset($carrinho[$request->produto_id])) {
-            unset($carrinho[$request->produto_id]);
-            session()->put('carrinho', $carrinho);
+        if (isset($carrinho[$id])) {
+            unset($carrinho[$id]);
+            Session::put('carrinho', $carrinho);
+            return redirect()->route('caixa.index')->with('success', 'Produto removido do carrinho!');
         }
 
-        return response()->json([
-            'success' => true,
-            'carrinho' => $carrinho,
-            'total_itens' => count($carrinho),
-            'total_venda' => array_sum(array_column($carrinho, 'subtotal'))
-        ]);
+        return redirect()->route('caixa.index')->with('error', 'Produto não encontrado no carrinho!');
+    }
+
+    public function alterarQuantidadeItem(Request $request, $id)
+    {
+        $carrinho = Session::get('carrinho', []);
+        
+        if (isset($carrinho[$id])) {
+            $quantidade = $request->quantidade;
+            
+            if ($quantidade < 1) {
+                unset($carrinho[$id]);
+                Session::put('carrinho', $carrinho);
+                return redirect()->route('caixa.index')->with('success', 'Produto removido do carrinho!');
+            }
+            
+            // Atualizar quantidade
+            $carrinho[$id]['quantidade'] = $quantidade;
+            $carrinho[$id]['subtotal'] = $carrinho[$id]['preco'] * $quantidade;
+            
+            Session::put('carrinho', $carrinho);
+            return redirect()->route('caixa.index')->with('success', 'Quantidade atualizada!');
+        }
+        
+        return redirect()->route('caixa.index')->with('error', 'Produto não encontrado no carrinho!');
     }
 
     public function limparCarrinho()
     {
-        session()->forget('carrinho');
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Carrinho limpo com sucesso!'
-        ]);
+        Session::forget('carrinho');
+        return redirect()->route('caixa.index')->with('success', 'Carrinho limpo!');
     }
 
-    public function obterCarrinho()
+    public function storeVenda(Request $request)
     {
-        $carrinho = session()->get('carrinho', []);
-        
-        return response()->json([
-            'carrinho' => $carrinho,
-            'total_itens' => count($carrinho),
-            'total_venda' => array_sum(array_column($carrinho, 'subtotal'))
-        ]);
-    }
+        DB::beginTransaction();
 
-    public function show($id)
-    {
-        $venda = Venda::with(['itens.produto', 'usuario'])->findOrFail($id);
-        return view('caixa.detalhes-venda', compact('venda'));
-    }
-
-    public function cancelarVenda($id)
-    {
         try {
-            \DB::beginTransaction();
-
-            $venda = Venda::findOrFail($id);
+            $carrinho = Session::get('carrinho', []);
             
-            // Restaurar estoque dos produtos
-            foreach ($venda->itens as $item) {
-                $produto = $item->produto;
-                $produto->increment('quantidade_estoque', $item->quantidade);
+            if (empty($carrinho)) {
+                return redirect()->back()->with('error', 'Carrinho vazio!');
             }
 
-            // Cancelar venda
-            $venda->update(['status' => 'CA']); // Cancelada
+            // Calcular total
+            $totalVenda = array_sum(array_column($carrinho, 'subtotal'));
 
-            \DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Venda cancelada com sucesso!'
+            // Criar venda - APENAS COM AS COLUNAS QUE EXISTEM NA TABELA
+            $venda = Venda::create([
+                'data' => now(),
+                'valor_total' => $totalVenda,
+                'forma_pagamento' => $request->forma_pagamento,
+                'usuario_id' => Auth::id(),
+                'status' => 'RE'
             ]);
 
-        } catch (\Exception $e) {
-            \DB::rollBack();
-            Log::error('Erro ao cancelar venda: ' . $e->getMessage());
+            // Adicionar itens da venda
+            foreach ($carrinho as $item) {
+                $produto = Produto::find($item['id']);
+                
+                if ($produto) {
+                    ItemVenda::create([
+                        'venda_id' => $venda->id,
+                        'produto_id' => $item['id'],
+                        'quantidade' => $item['quantidade'],
+                        'preco_unitario' => $item['preco'],
+                        'subtotal' => $item['subtotal']
+                    ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao cancelar venda: ' . $e->getMessage()
-            ], 500);
+                    // Atualizar estoque
+                    $produto->decrement('quantidade_estoque', $item['quantidade']);
+                }
+            }
+
+            // Limpar carrinho
+            Session::forget('carrinho');
+
+            DB::commit();
+
+            return redirect()->route('caixa.historico')->with('success', 'Venda realizada com sucesso! Nº ' . $venda->id);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Erro ao processar venda: ' . $e->getMessage());
         }
     }
+
 }

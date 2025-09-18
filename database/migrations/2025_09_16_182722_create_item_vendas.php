@@ -8,13 +8,13 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('item_vendas', function (Blueprint $table) {
+        Schema::create('itens_venda', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('venda_id')->constrained('vendas');
+            $table->foreignId('produto_id')->constrained('produtos');
             $table->integer('quantidade');
             $table->decimal('preco_unitario', 10, 2);
             $table->decimal('subtotal', 10, 2);
-            $table->foreignId('venda_id')->constrained('vendas');
-            $table->foreignId('produto_id')->constrained('produtos');
             $table->timestamps();
         });
     }

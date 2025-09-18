@@ -45,19 +45,15 @@ Route::middleware('auth')->group(function() {
     });
 
     // ========== ROTAS DE CAIXA ==========
+    // Rotas de caixa
     Route::prefix('caixa')->name('caixa.')->group(function() {
         Route::get('/', [ControleCaixa::class, 'index'])->name('index');
         Route::post('/venda', [ControleCaixa::class, 'storeVenda'])->name('venda.store');
         Route::post('/carrinho/adicionar', [ControleCaixa::class, 'adicionarItemCarrinho'])->name('carrinho.adicionar');
-        Route::post('/carrinho/remover', [ControleCaixa::class, 'removerItemCarrinho'])->name('carrinho.remover');
+        Route::post('/carrinho/remover/{id}', [ControleCaixa::class, 'removerItemCarrinho'])->name('carrinho.remover');
+        Route::post('/carrinho/alterar/{id}', [ControleCaixa::class, 'alterarQuantidadeItem'])->name('carrinho.alterar');
         Route::post('/carrinho/limpar', [ControleCaixa::class, 'limparCarrinho'])->name('carrinho.limpar');
-        Route::get('/carrinho', [ControleCaixa::class, 'obterCarrinho'])->name('carrinho.obter');
-        Route::get('/buscar-produtos', [ControleCaixa::class, 'buscarProdutos'])->name('buscar.produtos');
-        Route::get('/venda/{id}', [ControleCaixa::class, 'show'])->name('venda.show');
-        Route::post('/venda/{id}/cancelar', [ControleCaixa::class, 'cancelarVenda'])->name('venda.cancelar');
-        
-        // Rota alternativa para compatibilidade (se necessário)
-        // Route::post('/dashboard', [ControleCaixa::class, 'store'])->name('store.legacy');
+        Route::get('/historico', [ControleCaixa::class, 'historico'])->name('historico');
     });
 
     // ========== ROTAS DE VENDAS ==========
