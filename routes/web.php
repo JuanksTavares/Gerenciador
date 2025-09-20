@@ -54,6 +54,10 @@ Route::middleware('auth')->group(function() {
         Route::post('/carrinho/alterar/{id}', [ControleCaixa::class, 'alterarQuantidadeItem'])->name('carrinho.alterar');
         Route::post('/carrinho/limpar', [ControleCaixa::class, 'limparCarrinho'])->name('carrinho.limpar');
         Route::get('/historico', [ControleCaixa::class, 'historico'])->name('historico');
+        Route::get('/caixa/venda/{id}', [ControleCaixa::class, 'show'])->name('venda.show');
+        Route::get('/caixa/venda/{id}/cancelar', [ControleCaixa::class, 'show'])->name('venda.cancelar');
+        
+
     });
 
     // ========== ROTAS DE VENDAS ==========

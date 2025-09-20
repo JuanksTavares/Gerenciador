@@ -1,18 +1,35 @@
 @extends('layout')
-<title>Histórico de Vendas</title>
+<title>Vendas</title>
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Histórico de Vendas') }}
+            {{ __('Vendas') }}
         </h2>
     </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-1">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    
+                    <nav class="navbar bg-light">
+                        <div class="container-fluid">
+                            <a href="/dashboard" class="btn btn-dark mb-2">adicionar</a>
+                            <form class="d-flex" role="search" action = "/vendas" method = "GET">
+                                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name = "search">
+                            </form>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
+                    <table class="table" >
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -28,7 +45,8 @@
                                 @forelse($vendas as $venda)
                                 <tr>
                                     <td>{{ $venda->id }}</td>
-                                    <td>{{ $venda->data_venda->format('d/m/Y H:i') }}</td>
+                                    <td>{{ $venda->data_venda ? $venda->data_venda->format('d/m/Y H:i') : '-' }}</td>
+
                                     <td>R$ {{ number_format($venda->valor_total, 2, ',', '.') }}</td>
                                     <td>
                                         @switch($venda->forma_pagamento)
@@ -66,13 +84,12 @@
                                 @endforelse
                             </tbody>
                         </table>
-                    </div>
+                        {{ $vendas->links() }}
                     
-                    {{ $vendas->links() }}
-                    
-                    <a href="{{ route('caixa.index') }}" class="btn btn-primary mt-3">
+                    <a href="{{ route('caixa.index') }}" class="btn btn-dark mb-2">
                         Voltar para o Caixa
                     </a>
+                    </div>
                 </div>
             </div>
         </div>

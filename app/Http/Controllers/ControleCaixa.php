@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Venda;
 use App\Models\Produto;
 use App\Models\ItemVenda;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -126,15 +127,21 @@ class ControleCaixa extends Controller
                 return redirect()->back()->with('error', 'Carrinho vazio!');
             }
 
+            // Verificar se o usuário existe na tabela users
+            $user = Auth::user();
+            if (!$user) {
+                throw new \Exception('Usuário não autenticado');
+            }
+
             // Calcular total
             $totalVenda = array_sum(array_column($carrinho, 'subtotal'));
 
-            // Criar venda - APENAS COM AS COLUNAS QUE EXISTEM NA TABELA
+            // Criar venda
             $venda = Venda::create([
                 'data' => now(),
                 'valor_total' => $totalVenda,
                 'forma_pagamento' => $request->forma_pagamento,
-                'usuario_id' => Auth::id(),
+                'usuario_id' => $user->id,
                 'status' => 'RE'
             ]);
 
@@ -167,6 +174,22 @@ class ControleCaixa extends Controller
             DB::rollBack();
             return redirect()->back()->with('error', 'Erro ao processar venda: ' . $e->getMessage());
         }
+    }
+
+    public function historico()
+    {
+        $vendas = Venda::with(['itens.produto', 'usuario'])
+            ->orderBy('data', 'desc')
+            ->paginate(10);
+            
+        return view('caixa.historico', compact('vendas'));
+    }
+
+    public function show($id)
+    {
+        $venda = Venda::with(['itens.produto', 'usuario'])->findOrFail($id);
+
+        return view('caixa.detalhes', compact('venda'));
     }
 
 }

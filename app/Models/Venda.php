@@ -11,9 +11,10 @@ class Venda extends Model
     
     protected $table = 'vendas';
     
+    
     // Apenas as colunas que existem na tabela
     protected $fillable = [
-        'data',           // Nome correto da coluna
+        'data',           
         'valor_total',
         'forma_pagamento',
         'usuario_id',
@@ -33,6 +34,7 @@ class Venda extends Model
 
     public function usuario()
     {
+        // Ou se for 'users'
         return $this->belongsTo(User::class, 'usuario_id');
     }
 }
