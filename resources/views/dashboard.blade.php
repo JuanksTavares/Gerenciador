@@ -35,8 +35,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-sm font-medium text-gray-500">Produtos em Estoque</h3>
-                            <p class="text-2xl font-bold text-gray-900">2.222</p>
+                            <h3 class="text-sm font-medium text-gray-500">Produtos Ativos</h3>
+                            <p class="text-2xl font-bold text-gray-900">{{ $produtosAtivos }}</p>
                         </div>
                     </div>
                 </div>
@@ -50,8 +50,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-sm font-medium text-gray-500">Estoque Baixo</h3>
-                            <p class="text-2xl font-bold text-gray-900">111</p>
+                            <h3 class="text-sm font-medium text-gray-500">Produtos com Baixo Estoque</h3>
+                            <p class="text-2xl font-bold text-gray-900">{{ $produtosBaixoEstoque }}</p>
                         </div>
                     </div>
                 </div>

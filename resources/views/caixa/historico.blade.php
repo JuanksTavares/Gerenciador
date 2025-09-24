@@ -14,7 +14,8 @@
                     
                     <nav class="navbar bg-light">
                         <div class="container-fluid">
-                            <a href="/dashboard" class="btn btn-dark mb-2">adicionar</a>
+                            {{ $vendas->links() }}
+                            <a href="{{ route('caixa.index') }}" class="btn btn-dark mb-2">Voltar para o Caixa</a>
                             <form class="d-flex" role="search" action = "/vendas" method = "GET">
                                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name = "search">
                             </form>
@@ -29,67 +30,51 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <table class="table" >
-                            <thead>
+                    <table class="table">
                                 <tr>
                                     <th>ID</th>
                                     <th>Data</th>
                                     <th>Valor Total</th>
-                                    <th>Forma Pagamento</th>
-                                    <th>Itens</th>
-                                    <th>Funcionário</th>
+                                    <th>Status</th>
                                     <th>Ações</th>
                                 </tr>
-                            </thead>
-                            <tbody>
                                 @forelse($vendas as $venda)
                                 <tr>
                                     <td>{{ $venda->id }}</td>
-                                    <td>{{ $venda->data_venda ? $venda->data_venda->format('d/m/Y H:i') : '-' }}</td>
-
+                                    <td>{{ \Carbon\Carbon::parse($venda->data_venda)->format('d/m/Y H:i') }}</td>
                                     <td>R$ {{ number_format($venda->valor_total, 2, ',', '.') }}</td>
+                                    <td>{{ $venda->status === 'RE' ? 'Realizada' : 'Cancelada' }}</td>
                                     <td>
-                                        @switch($venda->forma_pagamento)
-                                            @case('DI') Dinheiro @break
-                                            @case('CR') Crédito @break
-                                            @case('DE') Débito @break
-                                            @case('PI') PIX @break
-                                            @default {{ $venda->forma_pagamento }}
-                                        @endswitch
-                                        @if($venda->parcelas > 1)
-                                            ({{ $venda->parcelas }}x)
-                                        @endif
-                                    </td>
-                                    <td>{{ $venda->itens->sum('quantidade') }}</td>
-                                    <td>{{ $venda->usuario->name }}</td>
-                                    <td>
-                                        <a href="{{ route('caixa.venda.show', $venda->id) }}" 
-                                           class="btn btn-sm btn-info">Detalhes</a>
-                                        @if($venda->status == 'RE')
-                                        <form action="{{ route('caixa.venda.cancelar', $venda->id) }}" 
-                                              method="POST" style="display: inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-danger" 
-                                                    onclick="return confirm('Cancelar esta venda?')">
-                                                Cancelar
-                                            </button>
-                                        </form>
+                                        <a href="{{ route('caixa.venda.detalhes', $venda->id) }}" 
+                                        class="btn btn-info btn-sm">
+                                            Detalhes
+                                        </a>
+                                        @if($venda->status !== 'CA')
+                                            <form action="{{ route('caixa.cancelar.venda', $venda->id) }}" 
+                                                method="POST" 
+                                                style="display: inline;">
+                                                @csrf
+                                                <button type="submit" 
+                                                        class="btn btn-danger btn-sm" 
+                                                        onclick="return confirm('Tem certeza que deseja cancelar esta venda?')">
+                                                    Cancelar
+                                                </button>
+                                            </form>
                                         @endif
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="7" class="text-center">Nenhuma venda encontrada</td>
+                                    <td colspan="6" class="px-4 py-2 border text-center">Nenhum produto encontrado.</td>
                                 </tr>
                                 @endforelse
-                            </tbody>
-                        </table>
+                    </table>
+                    <!-- <div>
                         {{ $vendas->links() }}
-                    
-                    <a href="{{ route('caixa.index') }}" class="btn btn-dark mb-2">
-                        Voltar para o Caixa
-                    </a>
-                    </div>
+                        <a href="{{ route('caixa.index') }}" class="btn btn-dark mb-2">
+                            Voltar para o Caixa
+                        </a>
+                    </div> -->
                 </div>
             </div>
         </div>

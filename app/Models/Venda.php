@@ -14,7 +14,7 @@ class Venda extends Model
     
     // Apenas as colunas que existem na tabela
     protected $fillable = [
-        'data',           
+        'data_venda',           
         'valor_total',
         'forma_pagamento',
         'usuario_id',
@@ -26,15 +26,26 @@ class Venda extends Model
         'valor_total' => 'decimal:2',
     ];
 
+    protected $dates = [
+        'data_venda',
+        'created_at',
+        'updated_at'
+    ];
+
 
     public function itens()
     {
-        return $this->hasMany(ItemVenda::class, 'venda_id');
+        return $this->hasMany(ItemVenda::class);
     }
 
     public function usuario()
     {
         // Ou se for 'users'
         return $this->belongsTo(User::class, 'usuario_id');
+    }
+    
+    public function getDataVendaFormattedAttribute()
+    {
+        return $this->data_venda ? \Carbon\Carbon::parse($this->data_venda)->format('d/m/Y H:i') : '-';
     }
 }

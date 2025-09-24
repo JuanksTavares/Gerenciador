@@ -13,13 +13,17 @@ return new class extends Migration
             $table->string('tipo', 50);
             $table->date('periodo');
             $table->text('dados');
-            $table->foreignId('usuario_id')->constrained('usuarios');
+            $table->foreignId('usuario_id')->constrained('users'); // Alterado de 'usuarios' para 'users'
             $table->timestamps();
         });
     }
 
     public function down()
     {
+        Schema::table('relatorios', function (Blueprint $table) {
+            $table->dropForeign(['usuario_id']);
+        });
+        
         Schema::dropIfExists('relatorios');
     }
 };

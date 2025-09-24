@@ -5,6 +5,7 @@ use App\Http\Controllers\ControleProduto; // Nome corrigido
 use App\Http\Controllers\ControleCaixa;   // Nome corrigido
 use App\Http\Controllers\ControleVendas;  // Nome corrigido
 use App\Http\Controllers\ControleFornecedor;
+use App\Http\Controllers\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,7 +19,7 @@ use App\Http\Controllers\ControleFornecedor;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');;
 
 require __DIR__.'/auth.php';
 
@@ -29,9 +30,7 @@ require __DIR__.'/auth.php';
 Route::middleware('auth')->group(function() {
     
     // Dashboard Principal
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
 
     // ========== ROTAS DE PRODUTOS ==========
     Route::prefix('produtos')->name('produtos.')->group(function() {
@@ -55,15 +54,8 @@ Route::middleware('auth')->group(function() {
         Route::post('/carrinho/limpar', [ControleCaixa::class, 'limparCarrinho'])->name('carrinho.limpar');
         Route::get('/historico', [ControleCaixa::class, 'historico'])->name('historico');
         Route::get('/caixa/venda/{id}', [ControleCaixa::class, 'show'])->name('venda.show');
-        Route::get('/caixa/venda/{id}/cancelar', [ControleCaixa::class, 'show'])->name('venda.cancelar');
-        
-
-    });
-
-    // ========== ROTAS DE VENDAS ==========
-    Route::prefix('vendas')->name('vendas.')->group(function() {
-        Route::get('/', [ControleVendas::class, 'index'])->name('index');
-        // Adicione outras rotas de vendas conforme necessário
+        Route::post('/venda/{id}/cancelar', [ControleCaixa::class, 'cancelarVenda'])->name('cancelar.venda');
+        Route::get('/venda/{id}/detalhes', [ControleCaixa::class, 'detalhesVenda'])->name('venda.detalhes');
     });
 
     // ========== ROTAS DE FORNECEDORES ==========

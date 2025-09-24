@@ -48,6 +48,14 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div>
+                            <label for="status">Status</label>
+                            <select name="status" id="status" class="form-control" required>
+                                <option value="A" {{ $produto->status == 'A' ? 'selected' : '' }}>Ativo</option>
+                                <option value="B" {{ $produto->status == 'B' ? 'selected' : '' }}>Baixo Estoque</option>
+                                <option value="I" {{ $produto->status == 'I' ? 'selected' : '' }}>Inativo</option>
+                            </select>
+                        </div>
                       </div>
                       <button class="btn btn-outline-success">Salvar</button>
                   </form>

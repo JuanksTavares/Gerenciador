@@ -40,6 +40,7 @@
                             <td>Preco</td>
                             <td>Estoque Disponivel</td>
                             <td>Estoque Minimo</td>
+                            <td>Status</td>
                             <td>Fornecedor</td>
                             <td>Editar/Deletar</td>
                         </tr>
@@ -51,6 +52,15 @@
                                 <td>{{ $produto->preco}}</td>
                                 <td>{{ $produto->quantidade_estoque}}</td>
                                 <td>{{ $produto->estoque_minimo}}</td>
+                                <td>
+                                    @if($produto->status === 'B')
+                                        <span class="badge bg-warning">Baixo Estoque</span>
+                                    @elseif($produto->status === 'A')
+                                        <span class="badge bg-success">Ativo</span>
+                                    @else
+                                        <span class="badge bg-danger">Inativo</span>
+                                    @endif
+                                </td>
                                 <td>{{ $produto->fornecedor_id}}</td>
                                 <td>
                                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">

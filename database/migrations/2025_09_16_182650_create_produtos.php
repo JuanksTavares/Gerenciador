@@ -15,6 +15,7 @@ return new class extends Migration
             $table->decimal('preco', 10, 2);
             $table->integer('quantidade_estoque')->default(0);
             $table->integer('estoque_minimo')->default(0);
+            // $table->string('status', 2)->default('AT'); // AT = Ativo, TB = Estoque Baixo e DS = desativado
             $table->foreignId('fornecedor_id')->constrained('fornecedors');
             $table->timestamps();
         });

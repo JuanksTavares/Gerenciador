@@ -3,8 +3,12 @@
 <x-guest-layout>
     <x-auth-card>
         <x-slot name="logo">
-            <a href="/">
-                <!-- <x-application-logo class="w-20 h-20 fill-current text-gray-500" /> -->
+            <a href="{{ route('welcome') }}">
+                <img 
+                    src="{{ asset('imagens/hand-drawn-vintage-bread-and-basket-logo-in-flat-style-png.png') }}" 
+                    alt="Logo" 
+                    class="block h-10 w-auto"
+                >
             </a>
         </x-slot>
 

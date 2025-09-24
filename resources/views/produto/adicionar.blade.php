@@ -39,7 +39,10 @@
                                 @endforeach
                             </select>
                             <label for="descricao">Descricao</label>
-                            <input type="text" class="form-control" name="descricao" id="descricao"required>
+                            <input type="text" class="form-control" name="descricao" id="descricao" required>
+
+                            <!-- Adicione este campo antes do botão salvar -->
+                            <input type="hidden" name="status" value="A">
                         </div>
                         <button class="btn btn-outline-success">Salvar</button>
                     </form>

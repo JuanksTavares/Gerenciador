@@ -26,6 +26,7 @@ class ControleCaixa extends Controller
         // Buscar produtos se houver termo de busca
         if ($searchTerm) {
             $produtos = Produto::where('quantidade_estoque', '>', 0)
+                ->where('status', 'A', 'B') // produtos ativos
                 ->where(function($query) use ($searchTerm) {
                     $query->where('nome', 'like', '%' . $searchTerm . '%');
                 })
@@ -42,6 +43,12 @@ class ControleCaixa extends Controller
     {
         try {
             $produto = Produto::findOrFail($request->produto_id);
+            
+            // Verificar se o produto está ativo
+            if ($produto->status !== 'A') {
+                return redirect()->back()->with('error', 'Este produto não está disponível para venda.');
+            }
+
             $quantidade = $request->quantidade ?? 1;
             
             // Verificar estoque
@@ -137,13 +144,13 @@ class ControleCaixa extends Controller
             $totalVenda = array_sum(array_column($carrinho, 'subtotal'));
 
             // Criar venda
-            $venda = Venda::create([
-                'data' => now(),
-                'valor_total' => $totalVenda,
-                'forma_pagamento' => $request->forma_pagamento,
-                'usuario_id' => $user->id,
-                'status' => 'RE'
-            ]);
+            $venda = new Venda();
+            $venda->data_venda = now(); // Isso garante que será salvo como DateTime
+            $venda->valor_total = $totalVenda;
+            $venda->forma_pagamento = $request->forma_pagamento;
+            $venda->usuario_id = $user->id;
+            $venda->status = 'RE';
+            $venda->save();
 
             // Adicionar itens da venda
             foreach ($carrinho as $item) {
@@ -160,6 +167,13 @@ class ControleCaixa extends Controller
 
                     // Atualizar estoque
                     $produto->decrement('quantidade_estoque', $item['quantidade']);
+
+                    // Verificar e atualizar status baseado no estoque
+                    if ($produto->quantidade_estoque <= $produto->estoque_minimo) {
+                        $produto->update(['status' => 'B']); // B = Baixo Estoque
+                    } elseif ($produto->quantidade_estoque > $produto->estoque_minimo) {
+                        $produto->update(['status' => 'A']); // A = Ativo
+                    }
                 }
             }
 
@@ -179,7 +193,7 @@ class ControleCaixa extends Controller
     public function historico()
     {
         $vendas = Venda::with(['itens.produto', 'usuario'])
-            ->orderBy('data', 'desc')
+            ->orderBy('data_venda', 'desc')
             ->paginate(10);
             
         return view('caixa.historico', compact('vendas'));
@@ -190,6 +204,59 @@ class ControleCaixa extends Controller
         $venda = Venda::with(['itens.produto', 'usuario'])->findOrFail($id);
 
         return view('caixa.detalhes', compact('venda'));
+    }
+
+    public function cancelarVenda($id)
+    {
+        try {
+            DB::beginTransaction();
+            
+            // Busca a venda com seus itens
+            $venda = Venda::with('itens.produto')->findOrFail($id);
+            
+            // Verifica se a venda já está cancelada
+            if ($venda->status === 'CA') {
+                return redirect()->back()->with('error', 'Esta venda já está cancelada.');
+            }
+
+            // Retorna os produtos ao estoque
+            foreach ($venda->itens as $item) {
+                $produto = Produto::find($item->produto_id);
+                if ($produto) {
+                    $produto->quantidade_estoque += $item->quantidade;
+                    $produto->save();
+
+                    // Verificar e atualizar status baseado no estoque
+                    if ($produto->quantidade_estoque <= $produto->estoque_minimo) {
+                        $produto->update(['status' => 'B']); // B = Baixo Estoque
+                    } elseif ($produto->quantidade_estoque > $produto->estoque_minimo) {
+                        $produto->update(['status' => 'A']); // A = Ativo
+                    }
+                }
+            }
+
+            // Atualiza o status da venda
+            $venda->status = 'CA';
+            $venda->save();
+
+            DB::commit();
+            return redirect()->route('caixa.historico')
+                ->with('success', 'Venda #' . $venda->id . ' cancelada com sucesso!');
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Erro ao cancelar venda: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Erro ao cancelar a venda: ' . $e->getMessage());
+        }
+    }
+
+    public function detalhesVenda($id)
+    {
+        $venda = Venda::with(['itens.produto', 'usuario'])
+            ->findOrFail($id);
+        
+        return view('caixa.detalhes-venda', compact('venda'));
     }
 
 }

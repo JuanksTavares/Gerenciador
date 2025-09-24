@@ -11,18 +11,24 @@ class ControleProduto extends Controller
     public function index() 
     {
         $search = request('search');
+        $showInactive = request('show_inactive', true);
+
+        $query = Produto::with('fornecedor');
 
         if($search) {
-            $produtos = Produto::with('fornecedor')
-                ->where('nome', 'like', '%'.$search.'%')
-                ->get();
-        } else {
-            $produtos = Produto::with('fornecedor')->get();
+            $query->where('nome', 'like', '%'.$search.'%');
         }
+
+        if (!$showInactive) {
+            $query->whereIn('status', ['A', 'B']); // Mostra produtos ativos e com baixo estoque
+        }
+        
+        $produtos = $query->get();
 
         return view('produto.index', [
             'produtos' => $produtos,
-            'search' => $search
+            'search' => $search,
+            'showInactive' => $showInactive
         ]);
     }
 
@@ -41,21 +47,25 @@ class ControleProduto extends Controller
             'preco' => 'required|numeric|min:0',
             'quantidade_estoque' => 'required|integer|min:0',
             'estoque_minimo' => 'required|integer|min:0',
-            'fornecedor_id' => 'required|exists:fornecedors,id'
+            'fornecedor_id' => 'required|exists:fornecedors,id',
+            'status' => 'required|in:A,B,I'
         ]);
         
-        // Criação do produto
-        $produto = Produto::create([
-            'nome' => $request->nome,
-            'descricao' => $request->descricao, // ← Adicione esta linha
-            'preco' => $request->preco,
-            'quantidade_estoque' => $request->quantidade_estoque,
-            'estoque_minimo' => $request->estoque_minimo,
-            'fornecedor_id' => $request->fornecedor_id
-        ]);
+        try {
+            $produto = Produto::create($request->all());
+            
+            // Atualizar status baseado no estoque
+            if ($produto->quantidade_estoque <= $produto->estoque_minimo) {
+                $produto->update(['status' => 'B']);
+            }
 
-        return redirect()->route('produtos.index')
-            ->with('success', 'Produto cadastrado com sucesso!');
+            return redirect()->route('produtos.index')
+                ->with('success', 'Produto cadastrado com sucesso!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Erro ao cadastrar produto: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function edit($id)
@@ -71,49 +81,59 @@ class ControleProduto extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validação
         $request->validate([
             'nome' => 'required|string|max:100',
             'descricao' => 'nullable|string',
             'preco' => 'required|numeric|min:0',
             'quantidade_estoque' => 'required|integer|min:0',
             'estoque_minimo' => 'required|integer|min:0',
-            'fornecedor_id' => 'required|exists:fornecedors,id'
+            'fornecedor_id' => 'required|exists:fornecedors,id',
+            'status' => 'required|in:A,B,I'
         ]);
 
-        // Atualização
-        $produto = Produto::findOrFail($id);
-        $produto->update([
-            'nome' => $request->nome,
-            'descricao' => $request->descricao, // ← Adicione esta linha
-            'preco' => $request->preco,
-            'quantidade_estoque' => $request->quantidade_estoque,
-            'estoque_minimo' => $request->estoque_minimo,
-            'fornecedor_id' => $request->fornecedor_id
-        ]);
+        try {
+            $produto = Produto::findOrFail($id);
+            $produto->update($request->all());
 
-        return redirect()->route('produtos.index')
-            ->with('success', 'Produto atualizado com sucesso!');
+            // Verificar e atualizar status baseado no estoque
+            if ($produto->quantidade_estoque <= $produto->estoque_minimo) {
+                $produto->update(['status' => 'B']); // B = Baixo Estoque
+            } elseif ($produto->quantidade_estoque > $produto->estoque_minimo) {
+                $produto->update(['status' => 'A']); // A = Ativo
+            }
+
+            return redirect()->route('produtos.index')
+                ->with('success', 'Produto atualizado com sucesso!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Erro ao atualizar produto: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function destroy($id)
     {
         $produto = Produto::findOrFail($id);
         
-        // Verificar se o produto está em vendas antes de excluir
-        // if ($produto->itensVenda()->exists()) {
-        //     return redirect()->route('produtos.index')
-        //         ->with('error', 'Não é possível excluir o produto pois está associado a vendas.');
-        // }
-        
-        $produto->delete();
+        try {
+            $produto->update([
+                'status' => 'I'  // Marca como inativo ao invés de deletar
+            ]);
 
-        return redirect()->route('produtos.index')
-            ->with('success', 'Produto excluído com sucesso!');
+            return redirect()->route('produtos.index')
+                ->with('success', 'Produto marcado como inativo com sucesso!');
+        } catch (\Exception $e) {
+            return redirect()->route('produtos.index')
+                ->with('error', 'Erro ao desativar o produto: ' . $e->getMessage());
+        }
+    }
+
+    private function atualizarStatusEstoque(Produto $produto)
+    {
+        if ($produto->quantidade_estoque <= $produto->estoque_minimo && $produto->status === 'A') {
+            $produto->update(['status' => 'B']); // Baixo Estoque
+        } elseif ($produto->quantidade_estoque > $produto->estoque_minimo && $produto->status === 'B') {
+            $produto->update(['status' => 'A']); // Voltar para Ativo
+        }
     }
 }
-
-// No método store
-
-
-// No método update

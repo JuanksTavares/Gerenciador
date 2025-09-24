@@ -18,6 +18,7 @@ class Produto extends Model
         'quantidade_estoque',
         'estoque_minimo',
         'fornecedor_id',
+        'status'
     ];
 
     // Remova esta linha se sua tabela tem created_at e updated_at

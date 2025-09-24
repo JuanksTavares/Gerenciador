@@ -6,7 +6,7 @@
                 <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
                 
             </a> -->
-            <a href="{{ route('dashboard') }}">
+            <a href="{{ route('welcome') }}">
                 <img 
                     src="{{ asset('imagens/hand-drawn-vintage-bread-and-basket-logo-in-flat-style-png.png') }}" 
                     alt="Logo" 

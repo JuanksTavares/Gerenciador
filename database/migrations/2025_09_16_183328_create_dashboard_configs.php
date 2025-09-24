@@ -10,15 +10,18 @@ return new class extends Migration
     {
         Schema::create('dashboard_configs', function (Blueprint $table) {
             $table->id();
-            $table->json('kpis');
-            $table->json('visualizacoes');
-            $table->foreignId('usuario_id')->constrained('usuarios');
+            $table->foreignId('usuario_id')->constrained('users'); // Corrigido para referenciar 'users'
+            $table->json('configuracoes');
             $table->timestamps();
         });
     }
 
     public function down()
     {
+        Schema::table('dashboard_configs', function (Blueprint $table) {
+            $table->dropForeign(['usuario_id']);
+        });
+        
         Schema::dropIfExists('dashboard_configs');
     }
 };
