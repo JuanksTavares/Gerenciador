@@ -20,8 +20,8 @@ class DashboardController extends Controller
         $quantidadeVendasHoje = $vendasHoje->count();
 
         // Vendas dos últimos 7 dias
-        $vendasSemana = Venda::where('status', 'RE')
-            ->whereDate('data_venda', '>=', Carbon::now()->subDays(7))
+        $vendasMes = Venda::where('status', 'RE')
+            ->whereDate('data_venda', '>=', Carbon::now()->subDays(30))
             ->sum('valor_total');
 
         // Produtos com estoque baixo (status B)
@@ -62,11 +62,19 @@ class DashboardController extends Controller
         return view('dashboard', compact(
             'totalVendasHoje',
             'quantidadeVendasHoje',
-            'vendasSemana',
+            'vendasMes',
             'produtosBaixoEstoque',
             'produtosAtivos',
             'produtosMaisVendidos',
             'formasPagamento'
         ));
+
+        $produtosMaisVendidos = DB::table('itens_venda')
+        ->join('produtos', 'itens_venda.produto_id', '=', 'produtos.id')
+        ->select('produtos.nome', DB::raw('SUM(itens_venda.quantidade) as total_vendido'))
+        ->groupBy('produtos.id', 'produtos.nome')
+        ->orderBy('total_vendido', 'DESC')
+        ->limit(5) // Top 5 produtos mais vendidos
+        ->get();
     }
 }

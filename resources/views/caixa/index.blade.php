@@ -210,7 +210,7 @@
                                     
                                     <div class="col-md-2 mb-3">
                                         <label>Total:</label>
-                                        <input type="text" class="form-control text-center" readonly value="R$ {{ number_format($totalVenda, 2, ',', '.') }}">
+                                        <input type="text" class="form-control text-center" readonly value="R$ {{ number_format($totalVenda, 2, ',', '.') }}">                                        
                                         <input type="hidden" name="total_venda" value="{{ $totalVenda }}">
                                     </div>
                                     
@@ -233,9 +233,9 @@
                                 <div class="row mt-4">
                                     <div class="col-12">
                                         <button class="btn btn-success btn-lg me-2" type="submit">
-                                            <i class="bi bi-check-lg"></i> Finalizar Venda
+                                            <i class="btn-outline-success"></i> Finalizar Venda
                                         </button>
-                                        <a href="{{ route('caixa.historico') }}" class="btn btn-info btn-lg">
+                                        <a href="{{ route('caixa.historico') }}" class="btn btn-outline-dark">
                                             <i class="bi bi-clock-history"></i> Histórico
                                         </a>
                                     </div>

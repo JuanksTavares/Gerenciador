@@ -25,14 +25,37 @@ class Fornecedor extends Model
     }
 
     /**
+     * Setar CNPJ
+     */
+    public function setCnpjAttribute($value)
+    {
+        // Remove tudo que não for número
+        $this->attributes['cnpj'] = preg_replace('/[^0-9]/', '', $value);
+    }
+
+    /**
      * Formatar CNPJ
      */
     public function getCnpjFormatadoAttribute()
     {
-        $cnpj = $this->cnpj;
-        return substr($cnpj, 0, 2) . '.' . substr($cnpj, 2, 3) . '.' . 
-               substr($cnpj, 5, 3) . '/' . substr($cnpj, 8, 4) . '-' . 
-               substr($cnpj, 12, 2);
+        $valor = $this->cnpj;
+        $tamanho = strlen($valor);
+
+        if ($tamanho === 11) { // CPF
+            return preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", "\$1.\$2.\$3-\$4", $valor);
+        } else if ($tamanho === 14) { // CNPJ
+            return preg_replace("/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/", "\$1.\$2.\$3/\$4-\$5", $valor);
+        }
+        
+        return $valor;
+    }
+
+    /**
+     * Obter tipo de documento
+     */
+    public function getTipoDocumentoAttribute()
+    {
+        return strlen($this->cnpj) === 11 ? 'CPF' : 'CNPJ';
     }
 
     /**

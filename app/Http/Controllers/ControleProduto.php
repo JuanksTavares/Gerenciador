@@ -11,25 +11,36 @@ class ControleProduto extends Controller
     public function index() 
     {
         $search = request('search');
-        $showInactive = request('show_inactive', true);
+        $status = request('status');
 
-        $query = Produto::with('fornecedor');
+        $query = Produto::with('fornecedor'); // Carrega o relacionamento com fornecedor
 
-        if($search) {
-            $query->where('nome', 'like', '%'.$search.'%');
+        // Filtro por status
+        if ($status) {
+            $query->where('status', $status);
         }
 
-        if (!$showInactive) {
-            $query->whereIn('status', ['A', 'B']); // Mostra produtos ativos e com baixo estoque
+        // Busca
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('nome', 'like', '%'.$search.'%')
+                  ->orWhere('descricao', 'like', '%'.$search.'%')
+                  ->orWhereHas('fornecedor', function($q) use ($search) {
+                      $q->where('nome', 'like', '%'.$search.'%');
+                  });
+            });
         }
-        
+
+        // Ordenação
+        $query->orderByRaw("CASE 
+            WHEN status = 'B' THEN 1
+            WHEN status = 'A' THEN 2
+            ELSE 3
+        END");
+
         $produtos = $query->get();
 
-        return view('produto.index', [
-            'produtos' => $produtos,
-            'search' => $search,
-            'showInactive' => $showInactive
-        ]);
+        return view('produto.index', compact('produtos', 'search'));
     }
 
     public function adicionar()
@@ -40,27 +51,37 @@ class ControleProduto extends Controller
 
     public function store(Request $request) 
     {
-        // Validação dos dados
-        $request->validate([
-            'nome' => 'required|string|max:100',
-            'descricao' => 'nullable|string',
-            'preco' => 'required|numeric|min:0',
-            'quantidade_estoque' => 'required|integer|min:0',
-            'estoque_minimo' => 'required|integer|min:0',
-            'fornecedor_id' => 'required|exists:fornecedors,id',
-            'status' => 'required|in:A,B,I'
-        ]);
-        
         try {
-            $produto = Produto::create($request->all());
+            // Validação dos dados
+            $request->validate([
+                'nome' => 'required|string|max:100',
+                'descricao' => 'nullable|string',
+                'preco' => 'required|numeric|min:0',
+                'quantidade_estoque' => 'required|integer|min:0',
+                'estoque_minimo' => 'required|integer|min:0',
+                'fornecedor_id' => 'required|exists:fornecedors,id',
+                'status' => 'required|in:A,B,I'
+            ]);
             
-            // Atualizar status baseado no estoque
+            // Criação do produto
+            $produto = Produto::create([
+                'nome' => $request->nome,
+                'descricao' => $request->descricao,
+                'preco' => $request->preco,
+                'quantidade_estoque' => $request->quantidade_estoque,
+                'estoque_minimo' => $request->estoque_minimo,
+                'fornecedor_id' => $request->fornecedor_id,
+                'status' => $request->status ?? 'A'
+            ]);
+
+            // Verifica o status do estoque
             if ($produto->quantidade_estoque <= $produto->estoque_minimo) {
                 $produto->update(['status' => 'B']);
             }
 
             return redirect()->route('produtos.index')
                 ->with('success', 'Produto cadastrado com sucesso!');
+
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Erro ao cadastrar produto: ' . $e->getMessage())

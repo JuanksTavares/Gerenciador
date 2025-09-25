@@ -26,7 +26,7 @@ class ControleCaixa extends Controller
         // Buscar produtos se houver termo de busca
         if ($searchTerm) {
             $produtos = Produto::where('quantidade_estoque', '>', 0)
-                ->where('status', 'A', 'B') // produtos ativos
+                ->where('status', ['A', 'B']) // produtos ativos
                 ->where(function($query) use ($searchTerm) {
                     $query->where('nome', 'like', '%' . $searchTerm . '%');
                 })
@@ -192,10 +192,27 @@ class ControleCaixa extends Controller
 
     public function historico()
     {
-        $vendas = Venda::with(['itens.produto', 'usuario'])
-            ->orderBy('data_venda', 'desc')
-            ->paginate(10);
-            
+        $query = Venda::with('usuario')  // Carrega o relacionamento com usuário
+            ->orderBy('created_at', 'desc');  // Ordena por data mais recente
+
+        // Filtro por status
+        if (request('status')) {
+            $query->where('status', request('status'));
+        }
+
+        // Busca
+        if (request('search')) {
+            $search = request('search');
+            $query->where(function($q) use ($search) {
+                $q->whereHas('usuario', function($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                })
+                ->orWhere('forma_pagamento', 'like', '%' . $search . '%');
+            });
+        }
+
+        $vendas = $query->get();
+
         return view('caixa.historico', compact('vendas'));
     }
 
@@ -258,5 +275,7 @@ class ControleCaixa extends Controller
         
         return view('caixa.detalhes-venda', compact('venda'));
     }
+
+    
 
 }
