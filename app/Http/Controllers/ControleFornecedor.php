@@ -42,46 +42,13 @@ class ControleFornecedor extends Controller
      */
     public function store(Request $request)
     {
-        // Remove caracteres especiais do documento
-        $documento = preg_replace('/[^0-9]/', '', $request->cnpj);
-        
-        // Determina se é CPF ou CNPJ baseado no tamanho
-        $tipoDocumento = strlen($documento) === 11 ? 'CPF' : 'CNPJ';
-        
-        // Regras de validação
-        $rules = [
+        // Validação dos dados
+        $validator = Validator::make($request->all(), [
             'nome' => 'required|string|max:100',
-            'cnpj' => [
-                'required',
-                'string',
-                function ($attribute, $value, $fail) {
-                    $clean = preg_replace('/[^0-9]/', '', $value);
-                    $length = strlen($clean);
-                    
-                    if ($length !== 11 && $length !== 14) {
-                        $fail('O documento deve ser um CPF (11 dígitos) ou CNPJ (14 dígitos) válido.');
-                    }
-                    
-                    if ($length === 11 && !$this->validaCPF($clean)) {
-                        $fail('O CPF informado não é válido.');
-                    }
-                    
-                    if ($length === 14 && !$this->validaCNPJ($clean)) {
-                        $fail('O CNPJ informado não é válido.');
-                    }
-                },
-                'unique:fornecedors,cnpj'
-            ],
+            'cnpj' => 'required|string|max:18|unique:fornecedors,cnpj',
             'telefone' => 'nullable|string|max:15',
             'email' => 'required|email|max:100|unique:fornecedors,email',
-        ];
-
-        $messages = [
-            'cnpj.required' => 'O campo CPF/CNPJ é obrigatório',
-            'cnpj.unique' => 'Este CPF/CNPJ já está cadastrado',
-        ];
-
-        $validator = Validator::make($request->all(), $rules, $messages);
+        ]);
 
         if ($validator->fails()) {
             return redirect()->back()
@@ -90,11 +57,10 @@ class ControleFornecedor extends Controller
         }
 
         Fornecedor::create($request->all());
-
         return redirect()->route('fornecedores.index')
             ->with('success', 'Fornecedor cadastrado com sucesso!');
-    }
 
+    }
     /**
      * Display the specified resource.
      */
@@ -120,11 +86,11 @@ class ControleFornecedor extends Controller
     {
         $fornecedor = Fornecedor::findOrFail($id);
 
-        // Validação dos dados
+        // Validação SIMPLIFICADA
         $validator = Validator::make($request->all(), [
             'nome' => 'required|string|max:100',
             'cnpj' => 'required|string|max:18|unique:fornecedors,cnpj,'.$fornecedor->id,
-            'telefone' => 'nullable|string|max:15',
+            'telefone' => 'required|string|max:15', // APENAS MAX LENGTH
             'email' => 'required|email|max:100|unique:fornecedors,email,'.$fornecedor->id,
         ]);
 

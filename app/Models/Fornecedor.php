@@ -71,4 +71,10 @@ class Fornecedor extends Model
         }
         return $telefone;
     }
+
+    public function setTelefoneAttribute($value)
+    {
+        // Remove tudo que não for número
+        $this->attributes['telefone'] = preg_replace('/[^0-9]/', '', $value);
+    }
 }
