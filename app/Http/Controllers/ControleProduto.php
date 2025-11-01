@@ -59,8 +59,7 @@ class ControleProduto extends Controller
                 'preco' => 'required|numeric|min:0',
                 'quantidade_estoque' => 'required|integer|min:0',
                 'estoque_minimo' => 'required|integer|min:0',
-                'fornecedor_id' => 'required|exists:fornecedors,id',
-                'status' => 'required|in:A,B,I'
+                'fornecedor_id' => 'required|exists:fornecedors,id'
             ]);
             
             // Criação do produto
@@ -71,7 +70,7 @@ class ControleProduto extends Controller
                 'quantidade_estoque' => $request->quantidade_estoque,
                 'estoque_minimo' => $request->estoque_minimo,
                 'fornecedor_id' => $request->fornecedor_id,
-                'status' => $request->status ?? 'A'
+                'status' => 'A'
             ]);
 
             // Verifica o status do estoque

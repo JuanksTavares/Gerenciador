@@ -1,11 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ControleProduto; // Nome corrigido
-use App\Http\Controllers\ControleCaixa;   // Nome corrigido
-use App\Http\Controllers\ControleVendas;  // Nome corrigido
+use App\Http\Controllers\ControleProduto; 
+use App\Http\Controllers\ControleCaixa; 
+use App\Http\Controllers\ControleVendas;  
 use App\Http\Controllers\ControleFornecedor;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RelatorioController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,8 +24,6 @@ Route::get('/', function () {
 
 require __DIR__.'/auth.php';
 
-// Rotas Públicas (se houver)
-// ...
 
 // Rotas Protegidas por Autenticação
 Route::middleware('auth')->group(function() {
@@ -44,7 +43,6 @@ Route::middleware('auth')->group(function() {
     });
 
     // ========== ROTAS DE CAIXA ==========
-    // Rotas de caixa
     Route::prefix('caixa')->name('caixa.')->group(function() {
         Route::get('/', [ControleCaixa::class, 'index'])->name('index');
         Route::post('/venda', [ControleCaixa::class, 'storeVenda'])->name('venda.store');
@@ -68,6 +66,11 @@ Route::middleware('auth')->group(function() {
     Route::put('/update/{id}', [ControleFornecedor::class, 'update'])->name('update');
     Route::delete('/{id}', [ControleFornecedor::class, 'destroy'])->name('destroy');
     Route::get('/api/fornecedores', [ControleFornecedor::class, 'apiFornecedores'])->name('api.fornecedores');
+    });
+
+    // ========== ROTAS DE RELATÓRIOS ==========
+    Route::prefix('relatorios')->name('relatorios.')->group(function() {
+        Route::post('/gerar', [RelatorioController::class, 'gerar'])->name('gerar');
     });
 });
 

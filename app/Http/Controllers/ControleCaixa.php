@@ -148,6 +148,7 @@ class ControleCaixa extends Controller
             $venda->data_venda = now(); // Isso garante que será salvo como DateTime
             $venda->valor_total = $totalVenda;
             $venda->forma_pagamento = $request->forma_pagamento;
+            $venda->parcelas = $request->forma_pagamento === 'CR' ? ($request->parcelas ?? 1) : 1;
             $venda->usuario_id = $user->id;
             $venda->status = 'RE';
             $venda->save();

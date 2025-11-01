@@ -59,6 +59,27 @@ class DashboardController extends Controller
                 return $item;
             });
 
+        // Vendas dos últimos 6 meses para o gráfico
+        $vendasPorMes = [];
+        $mesesLabels = [];
+        
+        for ($i = 5; $i >= 0; $i--) {
+            $mes = Carbon::now()->subMonths($i);
+            $mesInicio = $mes->copy()->startOfMonth();
+            $mesFim = $mes->copy()->endOfMonth();
+            
+            $totalMes = Venda::where('status', 'RE')
+                ->whereBetween('data_venda', [$mesInicio, $mesFim])
+                ->sum('valor_total');
+            
+            $vendasPorMes[] = number_format($totalMes, 2, '.', '');
+            $mesesLabels[] = ucfirst($mes->locale('pt_BR')->isoFormat('MMM/YY'));
+        }
+
+        // Dados para o gráfico de pizza (produtos mais vendidos)
+        $produtosLabels = $produtosMaisVendidos->pluck('nome')->toArray();
+        $produtosQuantidades = $produtosMaisVendidos->pluck('total_vendido')->toArray();
+
         return view('dashboard', compact(
             'totalVendasHoje',
             'quantidadeVendasHoje',
@@ -66,15 +87,11 @@ class DashboardController extends Controller
             'produtosBaixoEstoque',
             'produtosAtivos',
             'produtosMaisVendidos',
-            'formasPagamento'
+            'formasPagamento',
+            'vendasPorMes',
+            'mesesLabels',
+            'produtosLabels',
+            'produtosQuantidades'
         ));
-
-        $produtosMaisVendidos = DB::table('itens_venda')
-        ->join('produtos', 'itens_venda.produto_id', '=', 'produtos.id')
-        ->select('produtos.nome', DB::raw('SUM(itens_venda.quantidade) as total_vendido'))
-        ->groupBy('produtos.id', 'produtos.nome')
-        ->orderBy('total_vendido', 'DESC')
-        ->limit(5) // Top 5 produtos mais vendidos
-        ->get();
     }
 }

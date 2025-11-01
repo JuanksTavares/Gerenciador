@@ -98,19 +98,8 @@
                     <!-- Produtos Mais Vendidos -->
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Produtos Mais Vendidos</h3>
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium">Bala</span>
-                                <span class="text-sm text-gray-500">1.234 unidades</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium">Gelo</span>
-                                <span class="text-sm text-gray-500">987 unidades</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium">Chocolate</span>
-                                <span class="text-sm text-gray-500">765 unidades</span>
-                            </div>
+                        <div class="h-64 flex items-center justify-center">
+                            <canvas id="produtosMaisVendidosChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -120,68 +109,45 @@
                     <!-- Gráfico de Vendas Mensais -->
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Vendas Mensais (Últimos 6 meses)</h3>
-                        <div class="h-64 flex items-end justify-between">
-                            <!-- Barras do gráfico (simplificado) -->
-                            <div class="flex-1 mx-1 flex flex-col items-center">
-                                <div class="w-full bg-blue-500 rounded-t" style="height: 60%"></div>
-                                <span class="text-xs mt-2">1 Mês</span>
-                            </div>
-                            <div class="flex-1 mx-1 flex flex-col items-center">
-                                <div class="w-full bg-blue-500 rounded-t" style="height: 80%"></div>
-                                <span class="text-xs mt-2">2 Mês</span>
-                            </div>
-                            <div class="flex-1 mx-1 flex flex-col items-center">
-                                <div class="w-full bg-blue-500 rounded-t" style="height: 45%"></div>
-                                <span class="text-xs mt-2">3 Mês</span>
-                            </div>
-                            <div class="flex-1 mx-1 flex flex-col items-center">
-                                <div class="w-full bg-blue-500 rounded-t" style="height: 70%"></div>
-                                <span class="text-xs mt-2">4 Mês</span>
-                            </div>
-                            <div class="flex-1 mx-1 flex flex-col items-center">
-                                <div class="w-full bg-blue-500 rounded-t" style="height: 90%"></div>
-                                <span class="text-xs mt-2">5 Mês</span>
-                            </div>
-                            <div class="flex-1 mx-1 flex flex-col items-center">
-                                <div class="w-full bg-blue-500 rounded-t" style="height: 75%"></div>
-                                <span class="text-xs mt-2">6 Mês</span>
-                            </div>
+                        <div class="h-64">
+                            <canvas id="vendasMensaisChart"></canvas>
                         </div>
                     </div>
 
                     <!-- Gerar Relatório -->
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Gerar Relatório</h3>
-                        <form class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <form method="POST" action="{{ route('relatorios.gerar') }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @csrf
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Tipo de Relatório:</label>
-                                <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option>Geral</option>
-                                    <option>Financeiro</option>
-                                    <option>Estoque</option>
-                                    <option>Vendas</option>
+                                <select name="tipo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                                    <option value="geral">Geral</option>
+                                    <option value="financeiro">Financeiro</option>
+                                    <option value="estoque">Estoque</option>
+                                    <option value="vendas">Vendas</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Período:</label>
-                                <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option>1 Mês</option>
-                                    <option>3 Meses</option>
-                                    <option>6 Meses</option>
-                                    <option>1 Ano</option>
+                                <select name="periodo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                                    <option value="1">1 Mês</option>
+                                    <option value="3">3 Meses</option>
+                                    <option value="6">6 Meses</option>
+                                    <option value="12">1 Ano</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Formato:</label>
-                                <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option>PDF</option>
-                                    <option>Excel</option>
-                                    <option>CSV</option>
+                                <select name="formato" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                                    <option value="pdf">PDF</option>
+                                    <option value="excel">Excel</option>
+                                    <option value="csv">CSV</option>
                                 </select>
                             </div>
                             <div class="flex items-end">
                                 <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                                    Download
+                                    <i class="bi bi-download"></i> Download
                                 </button>
                             </div>
                         </form>
@@ -202,4 +168,143 @@
         .text-yellow-600 { color: #ca8a04; }
         .text-purple-600 { color: #9333ea; }
     </style>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gráfico de Vendas Mensais (Barras)
+            const ctx = document.getElementById('vendasMensaisChart');
+            
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: @json($mesesLabels),
+                        datasets: [{
+                            label: 'Vendas (R$)',
+                            data: @json($vendasPorMes),
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1,
+                            borderRadius: 5,
+                            hoverBackgroundColor: 'rgba(37, 99, 235, 0.9)',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += 'R$ ' + parseFloat(context.parsed.y).toLocaleString('pt-BR', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'R$ ' + value.toLocaleString('pt-BR', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)',
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Gráfico de Produtos Mais Vendidos (Pizza)
+            const ctxPizza = document.getElementById('produtosMaisVendidosChart');
+            
+            if (ctxPizza) {
+                new Chart(ctxPizza, {
+                    type: 'pie',
+                    data: {
+                        labels: @json($produtosLabels),
+                        datasets: [{
+                            label: 'Quantidade Vendida',
+                            data: @json($produtosQuantidades),
+                            backgroundColor: [
+                                'rgba(59, 130, 246, 0.8)',   // Azul
+                                'rgba(16, 185, 129, 0.8)',   // Verde
+                                'rgba(245, 158, 11, 0.8)',   // Amarelo/Laranja
+                                'rgba(139, 92, 246, 0.8)',   // Roxo
+                                'rgba(236, 72, 153, 0.8)',   // Rosa
+                            ],
+                            borderColor: [
+                                'rgba(59, 130, 246, 1)',
+                                'rgba(16, 185, 129, 1)',
+                                'rgba(245, 158, 11, 1)',
+                                'rgba(139, 92, 246, 1)',
+                                'rgba(236, 72, 153, 1)',
+                            ],
+                            borderWidth: 2,
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += context.parsed + ' unidades';
+                                        
+                                        // Calcular porcentagem
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                        label += ' (' + percentage + '%)';
+                                        
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </x-app-layout>
