@@ -24,21 +24,23 @@ class DashboardController extends Controller
             ->whereDate('data_venda', '>=', Carbon::now()->subDays(30))
             ->sum('valor_total');
 
-        // Produtos com estoque baixo (status B)
+        // Produtos com estoque baixo (status B) - contar cod_loja únicos
         $produtosBaixoEstoque = Produto::where('status', 'B')
-            ->count();
+            ->distinct('cod_loja')
+            ->count('cod_loja');
 
-        // Total de produtos ativos (status A)
+        // Total de produtos ativos (status A) - contar cod_loja únicos
         $produtosAtivos = Produto::where('status', 'A')
-            ->count();
+            ->distinct('cod_loja')
+            ->count('cod_loja');
 
-        // Produtos mais vendidos
+        // Produtos mais vendidos - Agrupados por cod_loja
         $produtosMaisVendidos = DB::table('itens_venda')
             ->join('produtos', 'itens_venda.produto_id', '=', 'produtos.id')
             ->join('vendas', 'itens_venda.venda_id', '=', 'vendas.id')
             ->where('vendas.status', 'RE')
-            ->select('produtos.nome', DB::raw('SUM(itens_venda.quantidade) as total_vendido'))
-            ->groupBy('produtos.id', 'produtos.nome')
+            ->select('produtos.cod_loja', 'produtos.nome', DB::raw('SUM(itens_venda.quantidade) as total_vendido'))
+            ->groupBy('produtos.cod_loja', 'produtos.nome')
             ->orderByDesc('total_vendido')
             ->take(5)
             ->get();

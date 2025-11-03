@@ -48,32 +48,90 @@
                             <p class="text-xs text-gray-500 mt-1">Mínimo 3 caracteres, máximo 100</p>
                         </div>
 
-                        <!-- Grid 2 colunas -->
+                        <!-- Grid 2 colunas - Códigos -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Preço -->
+                            <!-- Código da Loja -->
                             <div>
-                                <label for="preco" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="bi bi-currency-dollar text-green-600 mr-2"></i>Preço (R$) <span class="text-red-500">*</span>
+                                <label for="cod_loja" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="bi bi-shop text-green-600 mr-2"></i>Código da Loja
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" 
+                                    id="cod_loja" 
+                                    name="cod_loja" 
+                                    maxlength="50"
+                                    placeholder="Ex: LJ001"
+                                >
+                                <p class="text-xs text-gray-500 mt-1">Código de identificação da loja</p>
+                            </div>
+
+                            <!-- Código do Fornecedor -->
+                            <div>
+                                <label for="cod_forne" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="bi bi-truck text-green-600 mr-2"></i>Código do Fornecedor
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" 
+                                    id="cod_forne" 
+                                    name="cod_forne" 
+                                    maxlength="50"
+                                    placeholder="Ex: FOR123"
+                                >
+                                <p class="text-xs text-gray-500 mt-1">Código do produto no fornecedor</p>
+                            </div>
+                        </div>
+
+                        <!-- Grid 2 colunas - Preços -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Preço de Compra -->
+                            <div>
+                                <label for="preco_compra" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="bi bi-cart-check text-green-600 mr-2"></i>Preço de Compra (R$)
                                 </label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-3 text-gray-500">R$</span>
                                     <input 
                                         type="number" 
                                         class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" 
-                                        id="preco" 
-                                        name="preco" 
-                                        required 
+                                        id="preco_compra" 
+                                        name="preco_compra" 
                                         min="0.01" 
                                         step="0.01"
                                         placeholder="0,00"
                                     >
                                 </div>
+                                <p class="text-xs text-gray-500 mt-1">Valor pago ao fornecedor</p>
                             </div>
 
+                            <!-- Preço de Venda -->
+                            <div>
+                                <label for="preco_venda" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="bi bi-cash-coin text-green-600 mr-2"></i>Preço de Venda (R$)
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-3 text-gray-500">R$</span>
+                                    <input 
+                                        type="number" 
+                                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" 
+                                        id="preco_venda" 
+                                        name="preco_venda" 
+                                        min="0.01" 
+                                        step="0.01"
+                                        placeholder="0,00"
+                                    >
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Valor de venda ao cliente</p>
+                            </div>
+                        </div>
+
+                        <!-- Grid 2 colunas -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Fornecedor -->
                             <div>
                                 <label for="fornecedor_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class=""></i>Fornecedor <span class="text-red-500">*</span>
+                                    <i class="bi bi-people text-green-600 mr-2"></i>Fornecedor <span class="text-red-500">*</span>
                                 </label>
                                 <select 
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" 
@@ -91,21 +149,21 @@
 
                         <!-- Grid 2 colunas - Estoques -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Quantidade em Estoque -->
+                            <!-- Quantidade de Compra -->
                             <div>
-                                <label for="quantidade_estoque" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="bi bi-box text-green-600 mr-2"></i>Quantidade em Estoque <span class="text-red-500">*</span>
+                                <label for="quantidade_compra" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="bi bi-box text-green-600 mr-2"></i>Quantidade de Compra <span class="text-red-500">*</span>
                                 </label>
                                 <input 
                                     type="number" 
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" 
-                                    id="quantidade_estoque" 
-                                    name="quantidade_estoque" 
+                                    id="quantidade_compra" 
+                                    name="quantidade_compra" 
                                     required 
-                                    min="0"
+                                    min="1"
                                     placeholder="0"
                                 >
-                                <p class="text-xs text-gray-500 mt-1">Quantidade disponível no estoque</p>
+                                <p class="text-xs text-gray-500 mt-1">Quantidade de produtos a cadastrar</p>
                             </div>
 
                             <!-- Estoque Mínimo -->
@@ -203,10 +261,16 @@
             const form = document.getElementById('formProduto');
             
             // Validação do preço em tempo real
-            const precoInput = document.getElementById('preco');
-            precoInput.addEventListener('input', function() {
-                if (this.value < 0) {
-                    this.value = 0;
+            const precoCompraInput = document.getElementById('preco_compra');
+            const precoVendaInput = document.getElementById('preco_venda');
+            
+            [precoCompraInput, precoVendaInput].forEach(input => {
+                if (input) {
+                    input.addEventListener('input', function() {
+                        if (this.value < 0) {
+                            this.value = 0;
+                        }
+                    });
                 }
             });
 
@@ -219,6 +283,33 @@
                     }
                 });
             });
+
+            // Calcula margem de lucro automaticamente
+            if (precoCompraInput && precoVendaInput) {
+                const calcularMargem = () => {
+                    const compra = parseFloat(precoCompraInput.value) || 0;
+                    const venda = parseFloat(precoVendaInput.value) || 0;
+                    
+                    if (compra > 0 && venda > 0) {
+                        const margem = ((venda - compra) / compra * 100).toFixed(2);
+                        const cor = margem > 0 ? 'text-green-600' : 'text-red-600';
+                        
+                        // Adiciona indicador de margem se não existir
+                        let margemDiv = document.getElementById('margem-lucro');
+                        if (!margemDiv) {
+                            margemDiv = document.createElement('div');
+                            margemDiv.id = 'margem-lucro';
+                            margemDiv.className = 'mt-2 text-sm font-medium';
+                            precoVendaInput.parentElement.parentElement.appendChild(margemDiv);
+                        }
+                        
+                        margemDiv.innerHTML = `<span class="${cor}">Margem de lucro: ${margem}%</span>`;
+                    }
+                };
+                
+                precoCompraInput.addEventListener('input', calcularMargem);
+                precoVendaInput.addEventListener('input', calcularMargem);
+            }
 
             // Validação antes do envio
             form.addEventListener('submit', function(event) {

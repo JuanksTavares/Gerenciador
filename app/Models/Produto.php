@@ -14,8 +14,11 @@ class Produto extends Model
     protected $fillable = [
         'nome',
         'descricao',
-        'preco',
-        'quantidade_estoque',
+        'cod_loja',
+        'cod_forne',
+        'preco_compra',
+        'preco_venda',
+        'quantidade_compra',
         'estoque_minimo',
         'fornecedor_id',
         'status'

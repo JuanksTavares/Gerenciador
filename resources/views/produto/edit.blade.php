@@ -56,32 +56,89 @@
                             >
                         </div>
 
-                        <!-- Grid 3 colunas -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- Preço -->
+                        <!-- Grid 2 colunas - Códigos -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Código da Loja -->
                             <div>
-                                <label for="preco" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="bi bi-currency-dollar text-blue-600 mr-2"></i>Preço (R$) <span class="text-red-500">*</span>
+                                <label for="cod_loja" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="bi bi-shop text-blue-600 mr-2"></i>Código da Loja
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
+                                    id="cod_loja" 
+                                    name="cod_loja" 
+                                    value="{{ old('cod_loja', $produto->cod_loja) }}"
+                                    maxlength="50"
+                                    placeholder="Ex: LJ001"
+                                >
+                            </div>
+
+                            <!-- Código do Fornecedor -->
+                            <div>
+                                <label for="cod_forne" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="bi bi-truck text-blue-600 mr-2"></i>Código do Fornecedor
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
+                                    id="cod_forne" 
+                                    name="cod_forne" 
+                                    value="{{ old('cod_forne', $produto->cod_forne) }}"
+                                    maxlength="50"
+                                    placeholder="Ex: FOR123"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Grid 3 colunas - Preços -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Preço de Compra -->
+                            <div>
+                                <label for="preco_compra" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="bi bi-cart-check text-blue-600 mr-2"></i>Preço de Compra (R$)
                                 </label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-3 text-gray-500">R$</span>
                                     <input 
                                         type="number" 
                                         class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
-                                        id="preco" 
-                                        name="preco" 
-                                        value="{{ old('preco', $produto->preco) }}"
-                                        required 
+                                        id="preco_compra" 
+                                        name="preco_compra" 
+                                        value="{{ old('preco_compra', $produto->preco_compra) }}"
                                         min="0.01" 
                                         step="0.01"
                                     >
                                 </div>
                             </div>
 
+                            <!-- Preço de Venda -->
+                            <div>
+                                <label for="preco_venda" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="bi bi-cash-coin text-blue-600 mr-2"></i>Preço de Venda (R$) <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-3 text-gray-500">R$</span>
+                                    <input 
+                                        type="number" 
+                                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
+                                        id="preco_venda" 
+                                        name="preco_venda" 
+                                        value="{{ old('preco_venda', $produto->preco_venda) }}"
+                                        required
+                                        min="0.01" 
+                                        step="0.01"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grid 2 colunas -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Fornecedor -->
                             <div>
                                 <label for="fornecedor_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="bi mr-2"></i>Fornecedor <span class="text-red-500">*</span>
+                                    <i class="bi bi-people text-blue-600 mr-2"></i>Fornecedor <span class="text-red-500">*</span>
                                 </label>
                                 <select 
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
@@ -118,17 +175,17 @@
 
                         <!-- Grid 2 colunas - Estoques -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Quantidade em Estoque -->
+                            <!-- Quantidade de Compra -->
                             <div>
-                                <label for="quantidade_estoque" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="bi bi-box text-blue-600 mr-2"></i>Quantidade em Estoque <span class="text-red-500">*</span>
+                                <label for="quantidade_compra" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="bi bi-box text-blue-600 mr-2"></i>Quantidade de Compra <span class="text-red-500">*</span>
                                 </label>
                                 <input 
                                     type="number" 
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
-                                    id="quantidade_estoque" 
-                                    name="quantidade_estoque" 
-                                    value="{{ old('quantidade_estoque', $produto->quantidade_estoque) }}"
+                                    id="quantidade_compra" 
+                                    name="quantidade_compra" 
+                                    value="{{ old('quantidade_compra', $produto->quantidade_compra) }}"
                                     required 
                                     min="0"
                                 >
@@ -205,10 +262,16 @@
             const form = document.getElementById('formProduto');
             
             // Validação do preço em tempo real
-            const precoInput = document.getElementById('preco');
-            precoInput.addEventListener('input', function() {
-                if (this.value < 0) {
-                    this.value = 0;
+            const precoCompraInput = document.getElementById('preco_compra');
+            const precoVendaInput = document.getElementById('preco_venda');
+            
+            [precoCompraInput, precoVendaInput].forEach(input => {
+                if (input) {
+                    input.addEventListener('input', function() {
+                        if (this.value < 0) {
+                            this.value = 0;
+                        }
+                    });
                 }
             });
 
@@ -221,6 +284,36 @@
                     }
                 });
             });
+
+            // Calcula margem de lucro automaticamente
+            if (precoCompraInput && precoVendaInput) {
+                const calcularMargem = () => {
+                    const compra = parseFloat(precoCompraInput.value) || 0;
+                    const venda = parseFloat(precoVendaInput.value) || 0;
+                    
+                    if (compra > 0 && venda > 0) {
+                        const margem = ((venda - compra) / compra * 100).toFixed(2);
+                        const cor = margem > 0 ? 'text-green-600' : 'text-red-600';
+                        
+                        // Adiciona indicador de margem se não existir
+                        let margemDiv = document.getElementById('margem-lucro');
+                        if (!margemDiv) {
+                            margemDiv = document.createElement('div');
+                            margemDiv.id = 'margem-lucro';
+                            margemDiv.className = 'mt-2 text-sm font-medium col-span-3';
+                            precoVendaInput.parentElement.parentElement.parentElement.appendChild(margemDiv);
+                        }
+                        
+                        margemDiv.innerHTML = `<span class="${cor}"><i class="bi bi-graph-up mr-1"></i>Margem de lucro: ${margem}%</span>`;
+                    }
+                };
+                
+                precoCompraInput.addEventListener('input', calcularMargem);
+                precoVendaInput.addEventListener('input', calcularMargem);
+                
+                // Calcula na inicialização se houver valores
+                calcularMargem();
+            }
 
             // Validação antes do envio
             form.addEventListener('submit', function(event) {

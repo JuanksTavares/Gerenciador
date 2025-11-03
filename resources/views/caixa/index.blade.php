@@ -76,20 +76,23 @@
                                                 <tr class="hover:bg-gray-50 transition-colors">
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         <div class="text-sm font-medium text-gray-900">{{ $produto->nome }}</div>
+                                                        @if($produto->cod_loja)
+                                                            <div class="text-xs text-gray-500">Cód: {{ $produto->cod_loja }}</div>
+                                                        @endif
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
-                                                        <div class="text-sm font-semibold text-green-600">R$ {{ number_format($produto->preco, 2, ',', '.') }}</div>
+                                                        <div class="text-sm font-semibold text-green-600">R$ {{ number_format($produto->preco_venda, 2, ',', '.') }}</div>
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
-                                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $produto->quantidade_estoque > 10 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                                            {{ $produto->quantidade_estoque }} un.
+                                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $produto->total_disponivel > 10 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                                            {{ $produto->total_disponivel }} un.
                                                         </span>
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         <form method="POST" action="{{ route('caixa.carrinho.adicionar') }}" class="flex gap-2">
                                                             @csrf
                                                             <input type="hidden" name="produto_id" value="{{ $produto->id }}">
-                                                            <input type="number" class="w-20 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" name="quantidade" value="1" min="1" max="{{ $produto->quantidade_estoque }}">
+                                                            <input type="number" class="w-20 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" name="quantidade" value="1" min="1" max="{{ $produto->total_disponivel }}">
                                                             <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors shadow-sm" type="submit">
                                                                 <i class="bi bi-cart-plus"></i>
                                                             </button>

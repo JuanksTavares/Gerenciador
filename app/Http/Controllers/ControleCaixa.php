@@ -25,13 +25,22 @@ class ControleCaixa extends Controller
         
         // Buscar produtos se houver termo de busca
         if ($searchTerm) {
-            $produtos = Produto::where('quantidade_estoque', '>', 0)
-                ->where('status', ['A', 'B']) // produtos ativos
+            $produtosQuery = Produto::whereIn('status', ['A', 'B']) // produtos ativos ou baixo estoque
                 ->where(function($query) use ($searchTerm) {
-                    $query->where('nome', 'like', '%' . $searchTerm . '%');
+                    $query->where('nome', 'like', '%' . $searchTerm . '%')
+                          ->orWhere('cod_loja', 'like', '%' . $searchTerm . '%');
                 })
                 ->orderBy('nome')
                 ->get();
+            
+            // Agrupar por cod_loja
+            $produtos = $produtosQuery->groupBy('cod_loja')->map(function($grupo) {
+                // Pegar o último produto cadastrado do grupo
+                $produto = $grupo->sortByDesc('id')->first();
+                // Adicionar total de itens disponíveis
+                $produto->total_disponivel = $grupo->count();
+                return $produto;
+            })->values();
         }
         
         $carrinho = Session::get('carrinho', []);
@@ -44,30 +53,48 @@ class ControleCaixa extends Controller
         try {
             $produto = Produto::findOrFail($request->produto_id);
             
-            // Verificar se o produto está ativo
-            if ($produto->status !== 'A') {
+            // Verificar se o produto está ativo ou baixo estoque
+            if (!in_array($produto->status, ['A', 'B'])) {
                 return redirect()->back()->with('error', 'Este produto não está disponível para venda.');
             }
 
             $quantidade = $request->quantidade ?? 1;
             
-            // Verificar estoque
-            if ($produto->quantidade_estoque < $quantidade) {
-                return redirect()->back()->with('error', 'Estoque insuficiente. Disponível: ' . $produto->quantidade_estoque);
-            }
-
+            // Contar quantos produtos ativos/baixo estoque existem com mesmo cod_loja
+            $estoqueDisponivel = Produto::where('cod_loja', $produto->cod_loja)
+                ->whereIn('status', ['A', 'B'])
+                ->count();
+            
+            // Verificar quantos já estão no carrinho
             $carrinho = Session::get('carrinho', []);
+            $quantidadeNoCarrinho = 0;
+            
+            // Buscar se já existe produto com mesmo cod_loja no carrinho
+            foreach ($carrinho as $item) {
+                $itemProduto = Produto::find($item['id']);
+                if ($itemProduto && $itemProduto->cod_loja === $produto->cod_loja) {
+                    $quantidadeNoCarrinho += $item['quantidade'];
+                }
+            }
+            
+            $totalSolicitado = $quantidadeNoCarrinho + $quantidade;
+            
+            // Verificar estoque
+            if ($totalSolicitado > $estoqueDisponivel) {
+                return redirect()->back()->with('error', 'Estoque insuficiente. Disponível: ' . ($estoqueDisponivel - $quantidadeNoCarrinho));
+            }
 
             if (isset($carrinho[$produto->id])) {
                 $carrinho[$produto->id]['quantidade'] += $quantidade;
-                $carrinho[$produto->id]['subtotal'] = $carrinho[$produto->id]['quantidade'] * $produto->preco;
+                $carrinho[$produto->id]['subtotal'] = $carrinho[$produto->id]['quantidade'] * $produto->preco_venda;
             } else {
                 $carrinho[$produto->id] = [
                     'id' => $produto->id,
                     'nome' => $produto->nome,
-                    'preco' => $produto->preco,
+                    'cod_loja' => $produto->cod_loja,
+                    'preco' => $produto->preco_venda,
                     'quantidade' => $quantidade,
-                    'subtotal' => $produto->preco * $quantidade
+                    'subtotal' => $produto->preco_venda * $quantidade
                 ];
             }
 
@@ -155,26 +182,31 @@ class ControleCaixa extends Controller
 
             // Adicionar itens da venda
             foreach ($carrinho as $item) {
-                $produto = Produto::find($item['id']);
+                $quantidadeVendida = $item['quantidade'];
                 
-                if ($produto) {
+                // Buscar produtos disponíveis com mesmo cod_loja
+                $produtosDisponiveis = Produto::where('cod_loja', $item['cod_loja'])
+                    ->whereIn('status', ['A', 'B'])
+                    ->orderBy('id', 'asc') // Vender os mais antigos primeiro
+                    ->limit($quantidadeVendida)
+                    ->get();
+                
+                if ($produtosDisponiveis->count() < $quantidadeVendida) {
+                    throw new \Exception('Estoque insuficiente para ' . $item['nome']);
+                }
+                
+                // Marcar cada produto individual como VENDIDO
+                foreach ($produtosDisponiveis as $produtoVendido) {
                     ItemVenda::create([
                         'venda_id' => $venda->id,
-                        'produto_id' => $item['id'],
-                        'quantidade' => $item['quantidade'],
+                        'produto_id' => $produtoVendido->id,
+                        'quantidade' => 1, // Cada registro representa 1 unidade vendida
                         'preco_unitario' => $item['preco'],
-                        'subtotal' => $item['subtotal']
+                        'subtotal' => $item['preco']
                     ]);
-
-                    // Atualizar estoque
-                    $produto->decrement('quantidade_estoque', $item['quantidade']);
-
-                    // Verificar e atualizar status baseado no estoque
-                    if ($produto->quantidade_estoque <= $produto->estoque_minimo) {
-                        $produto->update(['status' => 'B']); // B = Baixo Estoque
-                    } elseif ($produto->quantidade_estoque > $produto->estoque_minimo) {
-                        $produto->update(['status' => 'A']); // A = Ativo
-                    }
+                    
+                    // Mudar status do produto para VENDIDO
+                    $produtoVendido->update(['status' => 'V']);
                 }
             }
 
@@ -237,19 +269,12 @@ class ControleCaixa extends Controller
                 return redirect()->back()->with('error', 'Esta venda já está cancelada.');
             }
 
-            // Retorna os produtos ao estoque
+            // Retorna os produtos ao estoque (mudando status de V para A)
             foreach ($venda->itens as $item) {
                 $produto = Produto::find($item->produto_id);
-                if ($produto) {
-                    $produto->quantidade_estoque += $item->quantidade;
-                    $produto->save();
-
-                    // Verificar e atualizar status baseado no estoque
-                    if ($produto->quantidade_estoque <= $produto->estoque_minimo) {
-                        $produto->update(['status' => 'B']); // B = Baixo Estoque
-                    } elseif ($produto->quantidade_estoque > $produto->estoque_minimo) {
-                        $produto->update(['status' => 'A']); // A = Ativo
-                    }
+                if ($produto && $produto->status === 'V') {
+                    // Voltar produto para status ATIVO
+                    $produto->update(['status' => 'A']);
                 }
             }
 
@@ -259,7 +284,7 @@ class ControleCaixa extends Controller
 
             DB::commit();
             return redirect()->route('caixa.historico')
-                ->with('success', 'Venda #' . $venda->id . ' cancelada com sucesso!');
+                ->with('success', 'Venda #' . $venda->id . ' cancelada com sucesso! Produtos retornaram ao estoque.');
             
         } catch (\Exception $e) {
             DB::rollBack();

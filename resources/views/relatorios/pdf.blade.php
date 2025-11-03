@@ -209,8 +209,8 @@
                     <tr>
                         <td>#{{ $produto->id }}</td>
                         <td>{{ $produto->nome }}</td>
-                        <td>R$ {{ number_format($produto->preco, 2, ',', '.') }}</td>
-                        <td>{{ $produto->quantidade_estoque }}</td>
+                        <td>R$ {{ number_format($produto->preco_venda, 2, ',', '.') }}</td>
+                        <td>{{ $produto->quantidade_compra }}</td>
                         <td>
                             @switch($produto->status)
                                 @case('A') Ativo @break
@@ -219,7 +219,7 @@
                                 @default -
                             @endswitch
                         </td>
-                        <td class="text-success">R$ {{ number_format($produto->preco * $produto->quantidade_estoque, 2, ',', '.') }}</td>
+                        <td class="text-success">R$ {{ number_format($produto->preco_venda * $produto->quantidade_compra, 2, ',', '.') }}</td>
                     </tr>
                 @endforeach
             </tbody>

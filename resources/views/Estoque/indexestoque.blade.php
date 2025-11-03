@@ -52,8 +52,8 @@
                             <tr>
                                 <td>{{$produto['id']}}</td>
                                 <td>{{ $produto->nome}}</td>
-                                <td>{{ $produto->preco}}</td>
-                                <td>{{ $produto->quantidade_estoque}}</td>
+                                <td>{{ $produto->preco_venda}}</td>
+                                <td>{{ $produto->quantidade_compra}}</td>
                                 <td>{{ $produto->estoque_minimo}}</td>
                                 <td>{{ $produto->fornecedor_id}}</td>
                                 <td>

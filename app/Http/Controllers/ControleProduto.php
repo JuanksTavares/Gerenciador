@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Produto;
 use App\Models\Fornecedor;
+use Illuminate\Support\Facades\DB;
 
 class ControleProduto extends Controller
 {
@@ -12,8 +13,13 @@ class ControleProduto extends Controller
     {
         $search = request('search');
         $status = request('status');
+        $agrupar = request('agrupar', '1'); // Por padrão, agrupado
 
-        $query = Produto::with('fornecedor'); // Carrega o relacionamento com fornecedor
+        // ATUALIZAR STATUS AUTOMATICAMENTE antes de listar
+        $this->verificarEAtualizarStatusEstoque();
+
+        // Query base - apenas produtos ativos (A) ou baixo estoque (B)
+        $query = Produto::whereIn('status', ['A', 'B']);
 
         // Filtro por status
         if ($status) {
@@ -25,22 +31,43 @@ class ControleProduto extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('nome', 'like', '%'.$search.'%')
                   ->orWhere('descricao', 'like', '%'.$search.'%')
-                  ->orWhereHas('fornecedor', function($q) use ($search) {
-                      $q->where('nome', 'like', '%'.$search.'%');
-                  });
+                  ->orWhere('cod_loja', 'like', '%'.$search.'%')
+                  ->orWhere('cod_forne', 'like', '%'.$search.'%');
             });
         }
 
-        // Ordenação
-        $query->orderByRaw("CASE 
-            WHEN status = 'B' THEN 1
-            WHEN status = 'A' THEN 2
-            ELSE 3
-        END");
+        // Buscar todos os produtos que atendem aos filtros
+        $todosProdutos = $query->with('fornecedor')->get();
 
-        $produtos = $query->get();
+        if ($agrupar === '1') {
+            // Agrupar por cod_loja e pegar o último produto de cada grupo
+            $produtos = $todosProdutos->groupBy('cod_loja')->map(function($grupo) {
+                // Pegar o último produto cadastrado do grupo (maior ID)
+                $ultimoProduto = $grupo->sortByDesc('id')->first();
+                
+                // Adicionar o total de itens do grupo
+                $ultimoProduto->total_estoque = $grupo->count();
+                
+                return $ultimoProduto;
+            })->values();
+        } else {
+            // Não agrupar - mostrar todos os produtos
+            $produtos = $todosProdutos->map(function($produto) {
+                $produto->total_estoque = 1; // Cada produto individual tem estoque 1
+                return $produto;
+            });
+        }
 
-        return view('produto.index', compact('produtos', 'search'));
+        // Ordenar por status
+        $produtos = $produtos->sortBy(function($produto) {
+            return match($produto->status) {
+                'B' => 1,
+                'A' => 2,
+                default => 3
+            };
+        })->values();
+
+        return view('produto.index', compact('produtos', 'search', 'agrupar'));
     }
 
     public function adicionar()
@@ -56,32 +83,58 @@ class ControleProduto extends Controller
             $request->validate([
                 'nome' => 'required|string|max:100',
                 'descricao' => 'nullable|string',
-                'preco' => 'required|numeric|min:0',
-                'quantidade_estoque' => 'required|integer|min:0',
+                'cod_loja' => 'nullable|string|max:50',
+                'cod_forne' => 'nullable|string|max:50',
+                'preco_compra' => 'nullable|numeric|min:0',
+                'preco_venda' => 'required|numeric|min:0',
+                'quantidade_compra' => 'required|integer|min:1',
                 'estoque_minimo' => 'required|integer|min:0',
                 'fornecedor_id' => 'required|exists:fornecedors,id'
             ]);
-            
-            // Criação do produto
-            $produto = Produto::create([
-                'nome' => $request->nome,
-                'descricao' => $request->descricao,
-                'preco' => $request->preco,
-                'quantidade_estoque' => $request->quantidade_estoque,
-                'estoque_minimo' => $request->estoque_minimo,
-                'fornecedor_id' => $request->fornecedor_id,
-                'status' => 'A'
-            ]);
 
-            // Verifica o status do estoque
-            if ($produto->quantidade_estoque <= $produto->estoque_minimo) {
-                $produto->update(['status' => 'B']);
+            DB::beginTransaction();
+            
+            $quantidadeCompra = $request->quantidade_compra;
+            $produtosCriados = 0;
+
+            // Criar N registros de produtos baseado na quantidade_compra
+            for ($i = 0; $i < $quantidadeCompra; $i++) {
+                $produto = Produto::create([
+                    'nome' => $request->nome,
+                    'descricao' => $request->descricao,
+                    'cod_loja' => $request->cod_loja,
+                    'cod_forne' => $request->cod_forne,
+                    'preco_compra' => $request->preco_compra,
+                    'preco_venda' => $request->preco_venda,
+                    'quantidade_compra' => 1, // Cada registro representa 1 unidade
+                    'estoque_minimo' => $request->estoque_minimo,
+                    'fornecedor_id' => $request->fornecedor_id,
+                    'status' => 'A'
+                ]);
+
+                $produtosCriados++;
             }
 
+            // Atualizar o nome, preco_venda e estoque_minimo de todos os produtos com mesmo cod_loja
+            if ($request->cod_loja) {
+                Produto::where('cod_loja', $request->cod_loja)
+                    ->update([
+                        'nome' => $request->nome,
+                        'preco_venda' => $request->preco_venda,
+                        'estoque_minimo' => $request->estoque_minimo
+                    ]);
+            }
+
+            DB::commit();
+
+            // Verificar e atualizar status após cadastrar novos produtos
+            $this->verificarEAtualizarStatusEstoque();
+
             return redirect()->route('produtos.index')
-                ->with('success', 'Produto cadastrado com sucesso!');
+                ->with('success', "{$produtosCriados} produto(s) cadastrado(s) com sucesso!");
 
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->back()
                 ->with('error', 'Erro ao cadastrar produto: ' . $e->getMessage())
                 ->withInput();
@@ -104,8 +157,11 @@ class ControleProduto extends Controller
         $request->validate([
             'nome' => 'required|string|max:100',
             'descricao' => 'nullable|string',
-            'preco' => 'required|numeric|min:0',
-            'quantidade_estoque' => 'required|integer|min:0',
+            'cod_loja' => 'nullable|string|max:50',
+            'cod_forne' => 'nullable|string|max:50',
+            'preco_compra' => 'nullable|numeric|min:0',
+            'preco_venda' => 'required|numeric|min:0',
+            'quantidade_compra' => 'required|integer|min:0',
             'estoque_minimo' => 'required|integer|min:0',
             'fornecedor_id' => 'required|exists:fornecedors,id',
             'status' => 'required|in:A,B,I'
@@ -115,12 +171,19 @@ class ControleProduto extends Controller
             $produto = Produto::findOrFail($id);
             $produto->update($request->all());
 
-            // Verificar e atualizar status baseado no estoque
-            if ($produto->quantidade_estoque <= $produto->estoque_minimo) {
-                $produto->update(['status' => 'B']); // B = Baixo Estoque
-            } elseif ($produto->quantidade_estoque > $produto->estoque_minimo) {
-                $produto->update(['status' => 'A']); // A = Ativo
+            // Atualizar o nome, preco_venda e estoque_minimo de todos os produtos com mesmo cod_loja
+            if ($produto->cod_loja) {
+                Produto::where('cod_loja', $produto->cod_loja)
+                    ->where('id', '!=', $produto->id) // Não atualizar o próprio produto novamente
+                    ->update([
+                        'nome' => $produto->nome,
+                        'preco_venda' => $produto->preco_venda,
+                        'estoque_minimo' => $produto->estoque_minimo
+                    ]);
             }
+
+            // Verificar e atualizar status de todos os produtos com mesmo cod_loja
+            $this->verificarEAtualizarStatusEstoque();
 
             return redirect()->route('produtos.index')
                 ->with('success', 'Produto atualizado com sucesso!');
@@ -140,6 +203,9 @@ class ControleProduto extends Controller
                 'status' => 'I'  // Marca como inativo ao invés de deletar
             ]);
 
+            // Verificar e atualizar status dos produtos restantes com mesmo cod_loja
+            $this->verificarEAtualizarStatusEstoque();
+
             return redirect()->route('produtos.index')
                 ->with('success', 'Produto marcado como inativo com sucesso!');
         } catch (\Exception $e) {
@@ -148,11 +214,39 @@ class ControleProduto extends Controller
         }
     }
 
+    /**
+     * Verifica e atualiza o status de todos os produtos baseado no estoque total
+     * - Se total de produtos (A+B) <= estoque_minimo: muda todos para 'B' (Baixo Estoque)
+     * - Se total de produtos (A+B) > estoque_minimo: muda todos 'B' para 'A' (Ativo)
+     */
+    private function verificarEAtualizarStatusEstoque()
+    {
+        // Buscar todos os produtos (Ativos ou Baixo Estoque) agrupados por cod_loja
+        $produtosAgrupados = Produto::whereIn('status', ['A', 'B'])
+            ->select('cod_loja', 'estoque_minimo', DB::raw('COUNT(*) as total_estoque'))
+            ->groupBy('cod_loja', 'estoque_minimo')
+            ->get();
+
+        foreach ($produtosAgrupados as $grupo) {
+            if ($grupo->total_estoque <= $grupo->estoque_minimo) {
+                // Estoque BAIXO: Mudar TODOS (A ou B) para status 'B'
+                Produto::where('cod_loja', $grupo->cod_loja)
+                    ->whereIn('status', ['A', 'B'])
+                    ->update(['status' => 'B']);
+            } else {
+                // Estoque SUFICIENTE: Mudar todos 'B' para 'A'
+                Produto::where('cod_loja', $grupo->cod_loja)
+                    ->where('status', 'B')
+                    ->update(['status' => 'A']);
+            }
+        }
+    }
+
     private function atualizarStatusEstoque(Produto $produto)
     {
-        if ($produto->quantidade_estoque <= $produto->estoque_minimo && $produto->status === 'A') {
+        if ($produto->quantidade_compra <= $produto->estoque_minimo && $produto->status === 'A') {
             $produto->update(['status' => 'B']); // Baixo Estoque
-        } elseif ($produto->quantidade_estoque > $produto->estoque_minimo && $produto->status === 'B') {
+        } elseif ($produto->quantidade_compra > $produto->estoque_minimo && $produto->status === 'B') {
             $produto->update(['status' => 'A']); // Voltar para Ativo
         }
     }

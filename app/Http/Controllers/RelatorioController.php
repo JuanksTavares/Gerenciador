@@ -150,7 +150,7 @@ class RelatorioController extends Controller
         $produtosInativos = $produtos->where('status', 'I')->count();
 
         $valorTotalEstoque = $produtos->where('status', 'A')->sum(function($produto) {
-            return $produto->preco * $produto->quantidade_estoque;
+            return $produto->preco_venda * $produto->quantidade_compra;
         });
 
         return [
@@ -274,8 +274,8 @@ class RelatorioController extends Controller
                     fputcsv($file, [
                         $produto->id,
                         $produto->nome,
-                        'R$ ' . number_format($produto->preco, 2, ',', '.'),
-                        $produto->quantidade_estoque,
+                        'R$ ' . number_format($produto->preco_venda, 2, ',', '.'),
+                        $produto->quantidade_compra,
                         $produto->status
                     ], $delimiter);
                 }
