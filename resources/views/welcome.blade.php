@@ -62,6 +62,12 @@
                 font-size: 28px;
             }
 
+            /* Ajuste do tamanho do logo para melhor visualização */
+            .logo img {
+                height: 56px; /* ~3.5rem */
+                width: auto;
+            }
+
             nav ul {
                 display: flex;
                 list-style: none;
@@ -81,7 +87,7 @@
                 background-color: rgba(255, 255, 255, 0.1);
             }
 
-            /* Hero Section */
+            /* Hero Section */rgb(37,99,235)
             .hero {
                 background: linear-gradient(rgba(37, 99, 235, 0.9), rgba(30, 64, 175, 0.9)), url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
                 background-size: cover;
@@ -201,7 +207,7 @@
 
             .feature-icon {
                 font-size: 40px;
-                color: #2563eb;
+                color: #dc2626;
                 margin-bottom: 20px;
             }
 
@@ -230,8 +236,8 @@
 
             .benefit-icon {
                 font-size: 24px;
-                color: #2563eb;
-                background-color: #dbeafe;
+                color: #dc2626;
+                background-color: #fee2e2;
                 width: 50px;
                 height: 50px;
                 border-radius: 50%;
@@ -380,15 +386,15 @@
             <div class="container">
                 <div class="header-content">
                     <div class="logo">
-                        <i class="fas fa-boxes"></i>
-                        <span>Gerenciador De Estoque</span>
+                        <img 
+                            src="{{ asset('imagens/Logo.png') }}" 
+                            alt="Logo" 
+                            class="block w-auto"
+                        >
+                        {{-- <span>Gerenciador De Estoque</span> --}}
                     </div>
                     <nav>
                         <ul>
-                            <li><a href="#">Início</a></li>
-                            <li><a href="#">Recursos</a></li>
-                            <li><a href="#">Benefícios</a></li>
-                            <li><a href="#">Contato</a></li>
                             @auth
                                 <li><a href="{{ url('/dashboard') }}">Dashboard</a></li>
                             @else
@@ -418,26 +424,7 @@
             </div>
         </section>
 
-        <!-- About System -->
-        <section class="about">
-            <div class="container">
-                <div class="section-title">
-                    <h2>O que é um Sistema de Gerenciamento de Estoque?</h2>
-                    <p>Entenda como nossa solução pode transformar a gestão do seu negócio</p>
-                </div>
-                <div class="about-content">
-                    <div class="about-text">
-                        <h3>Controle total do seu inventário</h3>
-                        <p>Um Sistema de Gerenciamento de Estoque é uma solução tecnológica que permite às empresas controlar, organizar e acompanhar todos os aspectos relacionados ao seu inventário de produtos.</p>
-                        <p>Com nossa plataforma, você tem visibilidade completa sobre entradas, saídas, níveis de estoque, validade de produtos e muito mais, tudo em tempo real e de qualquer lugar.</p>
-                        <p>O sistema ajuda a evitar excessos ou falta de produtos, otimiza o espaço de armazenamento e fornece dados valiosos para a tomada de decisões estratégicas.</p>
-                    </div>
-                    <div class="about-image">
-                        <img src="https://images.unsplash.com/photo-1590650516494-0c8e4a4dd67b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Sistema de Gerenciamento de Estoque">
-                    </div>
-                </div>
-            </div>
-        </section>
+        <!-- About removed for a simpler landing -->
 
         <!-- Features -->
         <section class="features">
@@ -468,78 +455,12 @@
                         <h3>Relatórios</h3>
                         <p>Gere relatórios detalhados sobre giro de estoque, produtos mais vendidos e previsão de demanda.</p>
                     </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <h3>Alertas Automáticos</h3>
-                        <p>Receba alertas quando os produtos estiverem com estoque baixo ou perto da data de validade.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-barcode"></i>
-                        </div>
-                        <h3>Controle por Código de Barras</h3>
-                        <p>Use leitores de código de barras para agilizar as movimentações de estoque.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <h3>Acesso Mobile</h3>
-                        <p>Acesse o sistema de qualquer lugar através de dispositivos móveis como tablets e smartphones.</p>
-                    </div>
+                    <!-- Reduced feature set to keep it simple -->
                 </div>
             </div>
         </section>
 
-        <!-- Benefits -->
-        <section class="benefits">
-            <div class="container">
-                <div class="section-title">
-                    <h2>Vantagens do Sistema</h2>
-                    <p>Os benefícios de implementar um sistema de gerenciamento de estoque</p>
-                </div>
-                <div class="benefits-list">
-                    <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        <div class="benefit-content">
-                            <h3>Redução de Custos</h3>
-                            <p>Evite excesso de estoque e minimize perdas por produtos obsoletos ou com prazo de validade vencido.</p>
-                        </div>
-                    </div>
-                    <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="benefit-content">
-                            <h3>Economia de Tempo</h3>
-                            <p>Automatize processos manuais e reduza o tempo gasto com contagem e organização de estoque.</p>
-                        </div>
-                    </div>
-                    <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <i class="fas fa-chart-pie"></i>
-                        </div>
-                        <div class="benefit-content">
-                            <h3>Melhor Tomada de Decisão</h3>
-                            <p>Tenha acesso a dados precisos e relatórios detalhados para tomar decisões estratégicas baseadas em informações reais.</p>
-                        </div>
-                    </div>
-                    <div class="benefit-item">
-                        <div class="benefit-icon">
-                            <i class="fas fa-smile"></i>
-                        </div>
-                        <div class="benefit-content">
-                            <h3>Aumento da Satisfação do Cliente</h3>
-                            <p>Nunca mais perca uma venda por falta de estoque e garanta entregas rápidas e eficientes.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <!-- Benefits removed for simplicity -->
 
         <!-- CTA Section -->
         <div class="container">

@@ -24,23 +24,23 @@ class DashboardController extends Controller
             ->whereDate('data_venda', '>=', Carbon::now()->subDays(30))
             ->sum('valor_total');
 
-        // Produtos com estoque baixo (status B) - contar cod_loja únicos
+        // Produtos com estoque baixo (status B) - contar cod_barra únicos
         $produtosBaixoEstoque = Produto::where('status', 'B')
-            ->distinct('cod_loja')
-            ->count('cod_loja');
+            ->distinct('cod_barra')
+            ->count('cod_barra');
 
-        // Total de produtos ativos (status A) - contar cod_loja únicos
+        // Total de produtos ativos (status A) - contar cod_barra únicos
         $produtosAtivos = Produto::where('status', 'A')
-            ->distinct('cod_loja')
-            ->count('cod_loja');
+            ->distinct('cod_barra')
+            ->count('cod_barra');
 
-        // Produtos mais vendidos - Agrupados por cod_loja
+        // Produtos mais vendidos - Agrupados por cod_barra
         $produtosMaisVendidos = DB::table('itens_venda')
             ->join('produtos', 'itens_venda.produto_id', '=', 'produtos.id')
             ->join('vendas', 'itens_venda.venda_id', '=', 'vendas.id')
             ->where('vendas.status', 'RE')
-            ->select('produtos.cod_loja', 'produtos.nome', DB::raw('SUM(itens_venda.quantidade) as total_vendido'))
-            ->groupBy('produtos.cod_loja', 'produtos.nome')
+            ->select('produtos.cod_barra', 'produtos.nome', DB::raw('SUM(itens_venda.quantidade) as total_vendido'))
+            ->groupBy('produtos.cod_barra', 'produtos.nome')
             ->orderByDesc('total_vendido')
             ->take(5)
             ->get();

@@ -76,8 +76,8 @@
                                                 <tr class="hover:bg-gray-50 transition-colors">
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         <div class="text-sm font-medium text-gray-900">{{ $produto->nome }}</div>
-                                                        @if($produto->cod_loja)
-                                                            <div class="text-xs text-gray-500">Cód: {{ $produto->cod_loja }}</div>
+                                                        @if($produto->cod_barra)
+                                                            <div class="text-xs text-gray-500">Cód: {{ $produto->cod_barra }}</div>
                                                         @endif
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">

@@ -27,14 +27,14 @@ class ControleCaixa extends Controller
         if ($searchTerm) {
             $produtosQuery = Produto::whereIn('status', ['A', 'B']) // produtos ativos ou baixo estoque
                 ->where(function($query) use ($searchTerm) {
-                    $query->where('nome', 'like', '%' . $searchTerm . '%')
-                          ->orWhere('cod_loja', 'like', '%' . $searchTerm . '%');
+                      $query->where('nome', 'like', '%' . $searchTerm . '%')
+                          ->orWhere('cod_barra', 'like', '%' . $searchTerm . '%');
                 })
                 ->orderBy('nome')
                 ->get();
             
-            // Agrupar por cod_loja
-            $produtos = $produtosQuery->groupBy('cod_loja')->map(function($grupo) {
+            // Agrupar por cod_barra
+            $produtos = $produtosQuery->groupBy('cod_barra')->map(function($grupo) {
                 // Pegar o último produto cadastrado do grupo
                 $produto = $grupo->sortByDesc('id')->first();
                 // Adicionar total de itens disponíveis
@@ -60,8 +60,8 @@ class ControleCaixa extends Controller
 
             $quantidade = $request->quantidade ?? 1;
             
-            // Contar quantos produtos ativos/baixo estoque existem com mesmo cod_loja
-            $estoqueDisponivel = Produto::where('cod_loja', $produto->cod_loja)
+            // Contar quantos produtos ativos/baixo estoque existem com mesmo cod_barra
+            $estoqueDisponivel = Produto::where('cod_barra', $produto->cod_barra)
                 ->whereIn('status', ['A', 'B'])
                 ->count();
             
@@ -69,10 +69,10 @@ class ControleCaixa extends Controller
             $carrinho = Session::get('carrinho', []);
             $quantidadeNoCarrinho = 0;
             
-            // Buscar se já existe produto com mesmo cod_loja no carrinho
+            // Buscar se já existe produto com mesmo cod_barra no carrinho
             foreach ($carrinho as $item) {
                 $itemProduto = Produto::find($item['id']);
-                if ($itemProduto && $itemProduto->cod_loja === $produto->cod_loja) {
+                if ($itemProduto && $itemProduto->cod_barra === $produto->cod_barra) {
                     $quantidadeNoCarrinho += $item['quantidade'];
                 }
             }
@@ -91,7 +91,7 @@ class ControleCaixa extends Controller
                 $carrinho[$produto->id] = [
                     'id' => $produto->id,
                     'nome' => $produto->nome,
-                    'cod_loja' => $produto->cod_loja,
+                    'cod_barra' => $produto->cod_barra,
                     'preco' => $produto->preco_venda,
                     'quantidade' => $quantidade,
                     'subtotal' => $produto->preco_venda * $quantidade
@@ -184,8 +184,8 @@ class ControleCaixa extends Controller
             foreach ($carrinho as $item) {
                 $quantidadeVendida = $item['quantidade'];
                 
-                // Buscar produtos disponíveis com mesmo cod_loja
-                $produtosDisponiveis = Produto::where('cod_loja', $item['cod_loja'])
+                // Buscar produtos disponíveis com mesmo cod_barra
+                $produtosDisponiveis = Produto::where('cod_barra', $item['cod_barra'])
                     ->whereIn('status', ['A', 'B'])
                     ->orderBy('id', 'asc') // Vender os mais antigos primeiro
                     ->limit($quantidadeVendida)

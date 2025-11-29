@@ -71,27 +71,14 @@
                                 @if(request('status'))
                                     <input type="hidden" name="status" value="{{ request('status') }}">
                                 @endif
-                                @if(request('agrupar'))
-                                    <input type="hidden" name="agrupar" value="{{ request('agrupar') }}">
-                                @endif
+                                
                                 <button class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md" type="submit">
                                     <i class="bi bi-search"></i> Buscar
                                 </button>
                             </form>
                         </div>
                         
-                        <!-- Toggle Agrupamento -->
-                        <div class="flex gap-2 items-center bg-white px-3 py-2 rounded-lg border border-gray-300">
-                            <span class="text-xs font-medium text-gray-600">Visualização:</span>
-                            <a href="{{ route('produtos.index', array_merge(request()->except('agrupar'), ['agrupar' => '1'])) }}" 
-                               class="px-3 py-1 rounded-md text-xs font-medium transition-colors {{ ($agrupar ?? '1') == '1' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
-                                <i class="bi bi-collection"></i> Agrupado
-                            </a>
-                            <a href="{{ route('produtos.index', array_merge(request()->except('agrupar'), ['agrupar' => '0'])) }}" 
-                               class="px-3 py-1 rounded-md text-xs font-medium transition-colors {{ ($agrupar ?? '1') == '0' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
-                                <i class="bi bi-list-ul"></i> Lista Completa
-                            </a>
-                        </div>
+                        
                         
                         <!-- Filtros de Status -->
                         <div class="flex gap-2">
@@ -104,7 +91,7 @@
                                 <i class="bi bi-exclamation-triangle"></i> Baixo Estoque
                             </a>
                             @if(request('status') || $search)
-                                <a href="{{ route('produtos.index', request()->only('agrupar')) }}" 
+                                <a href="{{ route('produtos.index') }}" 
                                    class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-md">
                                     <i class="bi bi-x-circle"></i> Limpar
                                 </a>
@@ -144,19 +131,15 @@
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-800">
-                            <i class="bi bi-list-ul text-gray-600"></i> Lista de Produtos Agrupados
+                            <i class="bi bi-list-ul text-gray-600"></i> Lista de Produtos
                         </h3>
-                        <div class="text-xs bg-blue-50 text-blue-700 px-3 py-2 rounded-lg border border-blue-200">
-                            <i class="bi bi-info-circle mr-1"></i>
-                            Produtos agrupados por Código de Loja. Total mostra a soma de todos os itens.
-                        </div>
                     </div>
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cód. Loja</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cód. Barra</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produto</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preço Venda</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Estoque</th>
@@ -170,13 +153,11 @@
                                 @forelse ($produtos as $produto)
                                     <tr class="hover:bg-gray-50 transition-colors">
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm font-medium text-blue-600">{{ $produto->cod_loja ?? '-' }}</span>
+                                            <span class="text-sm font-medium text-blue-600">{{ $produto->cod_barra ?? '-' }}</span>
                                         </td>
                                         <td class="px-6 py-4">
                                             <div class="text-sm font-medium text-gray-900">{{ $produto->nome }}</div>
-                                            @if($produto->cod_forne)
-                                                <div class="text-xs text-gray-500">Cód. Forn: {{ $produto->cod_forne }}</div>
-                                            @endif
+                                            
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm font-semibold text-green-600">R$ {{ number_format($produto->preco_venda, 2, ',', '.') }}</div>
@@ -212,11 +193,11 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex justify-end gap-2">
-                                                @if($produto->total_estoque > 1)
+                                                {{-- @if($produto->total_estoque > 1)
                                                     <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-semibold" title="Total de itens com este código">
                                                         <i class="bi bi-stack"></i> {{ $produto->total_estoque }} itens
                                                     </span>
-                                                @endif
+                                                @endif --}}
                                                 <button 
                                                     onclick="mostrarDescricao('{{ $produto->nome }}', '{{ addslashes($produto->descricao ?? 'Sem descrição') }}')"
                                                     class="px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors shadow-sm"

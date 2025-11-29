@@ -13,7 +13,7 @@ class ControleProduto extends Controller
     {
         $search = request('search');
         $status = request('status');
-        $agrupar = request('agrupar', '1'); // Por padrão, agrupado
+        // Visualização sempre agrupada agora (removido parâmetro agrupar)
 
         // ATUALIZAR STATUS AUTOMATICAMENTE antes de listar
         $this->verificarEAtualizarStatusEstoque();
@@ -31,32 +31,21 @@ class ControleProduto extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('nome', 'like', '%'.$search.'%')
                   ->orWhere('descricao', 'like', '%'.$search.'%')
-                  ->orWhere('cod_loja', 'like', '%'.$search.'%')
-                  ->orWhere('cod_forne', 'like', '%'.$search.'%');
+                  ->orWhere('cod_barra', 'like', '%'.$search.'%');
             });
         }
 
         // Buscar todos os produtos que atendem aos filtros
         $todosProdutos = $query->with('fornecedor')->get();
 
-        if ($agrupar === '1') {
-            // Agrupar por cod_loja e pegar o último produto de cada grupo
-            $produtos = $todosProdutos->groupBy('cod_loja')->map(function($grupo) {
-                // Pegar o último produto cadastrado do grupo (maior ID)
-                $ultimoProduto = $grupo->sortByDesc('id')->first();
-                
-                // Adicionar o total de itens do grupo
-                $ultimoProduto->total_estoque = $grupo->count();
-                
-                return $ultimoProduto;
-            })->values();
-        } else {
-            // Não agrupar - mostrar todos os produtos
-            $produtos = $todosProdutos->map(function($produto) {
-                $produto->total_estoque = 1; // Cada produto individual tem estoque 1
-                return $produto;
-            });
-        }
+        // Agrupar por cod_barra e pegar o último produto de cada grupo
+        $produtos = $todosProdutos->groupBy('cod_barra')->map(function($grupo) {
+            // Pegar o último produto cadastrado do grupo (maior ID)
+            $ultimoProduto = $grupo->sortByDesc('id')->first();
+            // Adicionar o total de itens do grupo
+            $ultimoProduto->total_estoque = $grupo->count();
+            return $ultimoProduto;
+        })->values();
 
         // Ordenar por status
         $produtos = $produtos->sortBy(function($produto) {
@@ -67,7 +56,7 @@ class ControleProduto extends Controller
             };
         })->values();
 
-        return view('produto.index', compact('produtos', 'search', 'agrupar'));
+        return view('produto.index', compact('produtos', 'search'));
     }
 
     public function adicionar()
@@ -83,8 +72,7 @@ class ControleProduto extends Controller
             $request->validate([
                 'nome' => 'required|string|max:100',
                 'descricao' => 'nullable|string',
-                'cod_loja' => 'nullable|string|max:50',
-                'cod_forne' => 'nullable|string|max:50',
+                'cod_barra' => 'nullable|string|max:50',
                 'preco_compra' => 'nullable|numeric|min:0',
                 'preco_venda' => 'required|numeric|min:0',
                 'quantidade_compra' => 'required|integer|min:1',
@@ -102,8 +90,7 @@ class ControleProduto extends Controller
                 $produto = Produto::create([
                     'nome' => $request->nome,
                     'descricao' => $request->descricao,
-                    'cod_loja' => $request->cod_loja,
-                    'cod_forne' => $request->cod_forne,
+                    'cod_barra' => $request->cod_barra,
                     'preco_compra' => $request->preco_compra,
                     'preco_venda' => $request->preco_venda,
                     'quantidade_compra' => 1, // Cada registro representa 1 unidade
@@ -115,9 +102,9 @@ class ControleProduto extends Controller
                 $produtosCriados++;
             }
 
-            // Atualizar o nome, preco_venda e estoque_minimo de todos os produtos com mesmo cod_loja
-            if ($request->cod_loja) {
-                Produto::where('cod_loja', $request->cod_loja)
+            // Atualizar o nome, preco_venda e estoque_minimo de todos os produtos com mesmo cod_barra
+            if ($request->cod_barra) {
+                Produto::where('cod_barra', $request->cod_barra)
                     ->update([
                         'nome' => $request->nome,
                         'preco_venda' => $request->preco_venda,
@@ -157,8 +144,7 @@ class ControleProduto extends Controller
         $request->validate([
             'nome' => 'required|string|max:100',
             'descricao' => 'nullable|string',
-            'cod_loja' => 'nullable|string|max:50',
-            'cod_forne' => 'nullable|string|max:50',
+            'cod_barra' => 'nullable|string|max:50',
             'preco_compra' => 'nullable|numeric|min:0',
             'preco_venda' => 'required|numeric|min:0',
             'quantidade_compra' => 'required|integer|min:0',
@@ -171,9 +157,9 @@ class ControleProduto extends Controller
             $produto = Produto::findOrFail($id);
             $produto->update($request->all());
 
-            // Atualizar o nome, preco_venda e estoque_minimo de todos os produtos com mesmo cod_loja
-            if ($produto->cod_loja) {
-                Produto::where('cod_loja', $produto->cod_loja)
+            // Atualizar o nome, preco_venda e estoque_minimo de todos os produtos com mesmo cod_barra
+            if ($produto->cod_barra) {
+                Produto::where('cod_barra', $produto->cod_barra)
                     ->where('id', '!=', $produto->id) // Não atualizar o próprio produto novamente
                     ->update([
                         'nome' => $produto->nome,
@@ -182,7 +168,7 @@ class ControleProduto extends Controller
                     ]);
             }
 
-            // Verificar e atualizar status de todos os produtos com mesmo cod_loja
+            // Verificar e atualizar status de todos os produtos com mesmo cod_barra
             $this->verificarEAtualizarStatusEstoque();
 
             return redirect()->route('produtos.index')
@@ -203,7 +189,7 @@ class ControleProduto extends Controller
                 'status' => 'I'  // Marca como inativo ao invés de deletar
             ]);
 
-            // Verificar e atualizar status dos produtos restantes com mesmo cod_loja
+            // Verificar e atualizar status dos produtos restantes com mesmo cod_barra
             $this->verificarEAtualizarStatusEstoque();
 
             return redirect()->route('produtos.index')
@@ -221,21 +207,21 @@ class ControleProduto extends Controller
      */
     private function verificarEAtualizarStatusEstoque()
     {
-        // Buscar todos os produtos (Ativos ou Baixo Estoque) agrupados por cod_loja
+        // Buscar todos os produtos (Ativos ou Baixo Estoque) agrupados por cod_barra
         $produtosAgrupados = Produto::whereIn('status', ['A', 'B'])
-            ->select('cod_loja', 'estoque_minimo', DB::raw('COUNT(*) as total_estoque'))
-            ->groupBy('cod_loja', 'estoque_minimo')
+            ->select('cod_barra', 'estoque_minimo', DB::raw('COUNT(*) as total_estoque'))
+            ->groupBy('cod_barra', 'estoque_minimo')
             ->get();
 
         foreach ($produtosAgrupados as $grupo) {
             if ($grupo->total_estoque <= $grupo->estoque_minimo) {
                 // Estoque BAIXO: Mudar TODOS (A ou B) para status 'B'
-                Produto::where('cod_loja', $grupo->cod_loja)
+                Produto::where('cod_barra', $grupo->cod_barra)
                     ->whereIn('status', ['A', 'B'])
                     ->update(['status' => 'B']);
             } else {
                 // Estoque SUFICIENTE: Mudar todos 'B' para 'A'
-                Produto::where('cod_loja', $grupo->cod_loja)
+                Produto::where('cod_barra', $grupo->cod_barra)
                     ->where('status', 'B')
                     ->update(['status' => 'A']);
             }

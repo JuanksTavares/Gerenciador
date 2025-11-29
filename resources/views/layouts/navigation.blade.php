@@ -14,7 +14,7 @@
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
                         <img 
-                            src="{{ asset('imagens/hand-drawn-vintage-bread-and-basket-logo-in-flat-style-png.png') }}" 
+                            src="{{ asset('imagens/Logo.png') }}" 
                             alt="Logo" 
                             class="block h-10 w-auto"
                         >

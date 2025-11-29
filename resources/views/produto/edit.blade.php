@@ -58,35 +58,19 @@
 
                         <!-- Grid 2 colunas - Códigos -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Código da Loja -->
+                            <!-- Código de Barra -->
                             <div>
-                                <label for="cod_loja" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="bi bi-shop text-blue-600 mr-2"></i>Código da Loja
+                                <label for="cod_barra" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="bi bi-upc-scan text-blue-600 mr-2"></i>Código de Barra
                                 </label>
                                 <input 
                                     type="text" 
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
-                                    id="cod_loja" 
-                                    name="cod_loja" 
-                                    value="{{ old('cod_loja', $produto->cod_loja) }}"
+                                    id="cod_barra" 
+                                    name="cod_barra" 
+                                    value="{{ old('cod_barra', $produto->cod_barra) }}"
                                     maxlength="50"
-                                    placeholder="Ex: LJ001"
-                                >
-                            </div>
-
-                            <!-- Código do Fornecedor -->
-                            <div>
-                                <label for="cod_forne" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="bi bi-truck text-blue-600 mr-2"></i>Código do Fornecedor
-                                </label>
-                                <input 
-                                    type="text" 
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
-                                    id="cod_forne" 
-                                    name="cod_forne" 
-                                    value="{{ old('cod_forne', $produto->cod_forne) }}"
-                                    maxlength="50"
-                                    placeholder="Ex: FOR123"
+                                    placeholder="Ex: 7891234567890"
                                 >
                             </div>
                         </div>

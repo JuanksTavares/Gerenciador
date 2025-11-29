@@ -50,36 +50,20 @@
 
                         <!-- Grid 2 colunas - Códigos -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Código da Loja -->
+                            <!-- Código de Barra -->
                             <div>
-                                <label for="cod_loja" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="bi bi-shop text-green-600 mr-2"></i>Código da Loja
+                                <label for="cod_barra" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="bi bi-upc-scan text-green-600 mr-2"></i>Código de Barra
                                 </label>
                                 <input 
                                     type="text" 
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" 
-                                    id="cod_loja" 
-                                    name="cod_loja" 
+                                    id="cod_barra" 
+                                    name="cod_barra" 
                                     maxlength="50"
-                                    placeholder="Ex: LJ001"
+                                    placeholder="Ex: 7891234567890"
                                 >
-                                <p class="text-xs text-gray-500 mt-1">Código de identificação da loja</p>
-                            </div>
-
-                            <!-- Código do Fornecedor -->
-                            <div>
-                                <label for="cod_forne" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="bi bi-truck text-green-600 mr-2"></i>Código do Fornecedor
-                                </label>
-                                <input 
-                                    type="text" 
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all" 
-                                    id="cod_forne" 
-                                    name="cod_forne" 
-                                    maxlength="50"
-                                    placeholder="Ex: FOR123"
-                                >
-                                <p class="text-xs text-gray-500 mt-1">Código do produto no fornecedor</p>
+                                <p class="text-xs text-gray-500 mt-1">Identificador único (EAN / código interno)</p>
                             </div>
                         </div>
 

@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('historico_precos', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('historico_precos')) {
+            Schema::create('historico_precos', function (Blueprint $table) {
+                $table->id();
+                // Estrutura mínima original (colunas adicionais já são tratadas em outras migrações)
+                $table->timestamps();
+            });
+        }
     }
 
     /**
